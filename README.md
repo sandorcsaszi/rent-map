@@ -1,69 +1,57 @@
-# React + TypeScript + Vite
+# 🏠 Rent Map - Albérlet Kereső Térkép
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 💙 A Történet Mögött
+Az egész egy egyszerű problémával indult: albérletet kerestem Budapesten, és hamar rájöttem, mennyire fárasztó folyton különböző hirdetési oldalakat böngészni, majd minden egyes címet kézzel bepötyögni a Google Maps-be, hogy kiderítsem, pontosan hol is van. Egy idő után azt gondoltam: "Ennél biztosan lehetne egyszerűbben is!"
 
-Currently, two official plugins are available:
+Mivel programozó vagyok, úgy döntöttem, inkább készítek egy saját megoldást. Így született meg ez a kis alkalmazás – egy adag frusztrációból, de annál több lelkesedéssel, hogy másoknak is könnyebb legyen az albérletkeresés.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Rent Map Screenshot](screenshots/rent-map-demo.png)
+*Az alkalmazás működés közben - térkép, szűrők minden egy helyen!*
 
-## Expanding the ESLint configuration
+## ✨ Mit Tud a webapp?
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🗺️ **Interaktív térkép**: Minden albérletet egy helyen láthatsz, térképen megjelenítve
+- 📍 **Egyszerű hozzáadás**: Kattints a térképre, add meg az adatokat, és máris látható a pin
+- 🔍 **Okos keresés**: Címet írsz be, és automatikusan megtalálja a helyet
+- 💰 **Árszűrés**: Szűrhetsz bérleti díj szerint (ezer forintokban)
+- 🏢 **Részletes adatok**: Emelet, lift, közös költség - minden fontos infó egy helyen
+- 💾 **Automatikus mentés**: Minden adat helyben marad, nem kell újra beírni
+- 🎨 **Barátságos design**: Kellemes kék-fehér téma, hogy ne fájjon a szemed
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Hogyan Indítsd El?
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+```bash
+# Telepítsd a függőségeket
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Indítsd el a fejlesztői szervert
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Aztán nyisd meg a böngészőt a `http://localhost:5173` címen, és már használhatod is! 🎉
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Technikai Részletek
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **React 19** + **TypeScript** - Modern, típusbiztos fejlesztés
+- **Leaflet** térképek - Ingyenes és gyors
+- **Vite** - Villámgyors fejlesztői környezet
+- **Tailwind CSS** - Gyönyörű, reszponzív design
+- **OpenStreetMap** - Pontos címkeresés
+
+## 🎯 Jövőbeli Tervek
+
+- 📱 Mobil app verzió
+- 🔗 Integráció hirdetési oldalakkal
+- 📊 Statisztikák és trendek
+- 🚇 Tömegközlekedési info
+- ⭐ Értékelési rendszer
+
+## 💝 Köszönetnyilvánítás
+
+Köszönöm mindenkinek, aki használja ezt az alkalmazást! Ha segített neked megtalálni az álmaid otthonát, vagy csak egyszerűen megkönnyítette az albérletkeresést, akkor már megérte elkészíteni. ❤️
+
+---
+
+**Készítette:** Császi Sándor 👨‍💻  
+**Inspiráció:** A végtelen scrollozás a hirdetési oldalakon 😅  
+**Cél:** Hogy senki ne szenvedjen annyit az albérletkeresésben, mint én 🏡
