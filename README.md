@@ -32,11 +32,11 @@ Aztán nyisd meg a böngészőt a `http://localhost:5173` címen, és már haszn
 
 ## 🛠️ Technikai Részletek
 
-- **React 19** + **TypeScript** - Modern, típusbiztos fejlesztés
-- **Leaflet** térképek - Ingyenes és gyors
-- **Vite** - Villámgyors fejlesztői környezet
-- **Tailwind CSS** - Gyönyörű, reszponzív design
-- **OpenStreetMap** - Pontos címkeresés
+- **React 19** + **TypeScript**
+- **Leaflet** térképek
+- **Vite**
+- **Tailwind CSS**
+- **OpenStreetMap**
 
 ## 💝 Köszönetnyilvánítás
 
