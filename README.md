@@ -38,14 +38,6 @@ Aztán nyisd meg a böngészőt a `http://localhost:5173` címen, és már haszn
 - **Tailwind CSS** - Gyönyörű, reszponzív design
 - **OpenStreetMap** - Pontos címkeresés
 
-## 🎯 Jövőbeli Tervek
-
-- 📱 Mobil app verzió
-- 🔗 Integráció hirdetési oldalakkal
-- 📊 Statisztikák és trendek
-- 🚇 Tömegközlekedési info
-- ⭐ Értékelési rendszer
-
 ## 💝 Köszönetnyilvánítás
 
 Köszönöm mindenkinek, aki használja ezt az alkalmazást! Ha segített neked megtalálni az álmaid otthonát, vagy csak egyszerűen megkönnyítette az albérletkeresést, akkor már megérte elkészíteni. ❤️
