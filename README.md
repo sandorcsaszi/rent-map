@@ -15,20 +15,47 @@ Mivel programozó vagyok, úgy döntöttem, inkább készítek egy saját megold
 - 🔍 **Okos keresés**: Címet írsz be, és automatikusan megtalálja a helyet
 - 💰 **Árszűrés**: Szűrhetsz bérleti díj szerint (ezer forintokban)
 - 🏢 **Részletes adatok**: Emelet, lift, közös költség - minden fontos infó egy helyen
+- 🚌 **BKK megállók**: Budapesti tömegközlekedési megállók megjelenítése
 - 💾 **Automatikus mentés**: Minden adat helyben marad, nem kell újra beírni
-- 🎨 **Barátságos design**: Kellemes kék-fehér téma, hogy ne fájjon a szemed
+- 🎨 **Modern design**: Kellemes kék-fehér téma, hogy ne fájjon a szemed
 
 ## 🚀 Hogyan Indítsd El?
 
+### 1. Függőségek telepítése
 ```bash
-# Telepítsd a függőségeket
 npm install
+```
 
-# Indítsd el a fejlesztői szervert
+### 2. BKK API beállítása (kötelező)
+Hozz létre egy `.env` fájlt a projekt gyökerében:
+```env
+# BKK Futár API kulcs (kötelező)
+# Szerezd be innen: https://opendata.bkk.hu/
+VITE_BKK_API_KEY=your_api_key_here
+```
+
+**Hogyan szerezz BKK API kulcsot:**
+1. Menj a https://opendata.bkk.hu/ oldalra
+2. Regisztrálj egy fiókot
+3. Kérj API kulcsot a BKK Futár API-hoz
+4. Másold be a kulcsot a `.env` fájlba
+
+### 3. Fejlesztői szerver indítása
+```bash
 npm run dev
 ```
 
 Aztán nyisd meg a böngészőt a `http://localhost:5173` címen, és már használhatod is! 🎉
+
+## 🚌 BKK Megállók
+
+Az alkalmazás képes megjeleníteni a budapesti tömegközlekedési megállókat a BKK Futár API segítségével. A funkció használatához API kulcs szükséges, de nélküle is tökéletesen működik az albérlet térkép.
+
+**Funkciók:**
+- ✅ Valós idejű megálló adatok
+- ✅ Automatikus cache-elés a gyorsaság érdekében
+- ✅ Térképnézet alapú szűrés
+- ✅ Kattintható popup-ok részletes információkkal
 
 ## 🛠️ Technikai Részletek
 
@@ -44,6 +71,6 @@ Köszönöm mindenkinek, aki használja ezt az alkalmazást! Ha segített neked 
 
 ---
 
-**Készítette:** Császi Sándor 👨‍💻  
 **Inspiráció:** A végtelen scrollozás a hirdetési oldalakon 😅  
 **Cél:** Hogy senki ne szenvedjen annyit az albérletkeresésben, mint én 🏡
+**Készítette:** Császi Sándor 👨‍💻  

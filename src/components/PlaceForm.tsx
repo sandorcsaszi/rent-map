@@ -72,30 +72,32 @@ export default function PlaceForm({
   return (
     <div
       style={{
-        position: "absolute",
+        position: "fixed",
         left: "50%",
-        top: "32px",
+        top: "50%",
+        transform: "translate(-50%, -50%)",
         zIndex: 1100,
-        width: "360px",
-        maxWidth: "calc(100vw - 440px)",
-        transform: "translateX(-50%)",
+        width: "min(360px, calc(100vw - 40px))",
+        maxHeight: "calc(100vh - 80px)",
         borderRadius: "16px",
         background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 50%, ${colors.white} 100%)`,
-        padding: "24px",
+        padding: "min(24px, 3vh)",
         boxShadow: `0 20px 40px ${colors.primary}20, 0 8px 24px ${colors.primary}15`,
         border: `3px solid ${colors.primary}40`,
         animation: "fadeIn 0.3s ease-out",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <h2
         style={{
-          fontSize: "22px",
+          fontSize: "min(20px, 4.5vw)",
           fontWeight: "800",
-          marginBottom: "20px",
+          marginBottom: "min(16px, 2vh)",
           color: colors.secondary,
           textAlign: "center",
           borderBottom: `2px solid ${colors.primary}`,
-          paddingBottom: "12px",
+          paddingBottom: "min(8px, 1vh)",
         }}
       >
         {isEditing ? "✏️ Hely szerkesztése" : "📍 Új hely hozzáadása"}
@@ -118,7 +120,11 @@ export default function PlaceForm({
             hasElevator,
           });
         }}
-        style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "min(12px, 1.5vh)",
+        }}
       >
         <input
           style={{
@@ -127,8 +133,8 @@ export default function PlaceForm({
             borderRadius: "12px",
             background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
             border: `2px solid ${colors.lightGray}`,
-            padding: "14px 16px",
-            fontSize: "16px",
+            padding: "min(12px, 1.5vh) min(14px, 2vw)",
+            fontSize: "min(16px, 4vw)",
             outline: "none",
             transition: "all 0.2s",
             color: colors.secondary,
@@ -154,13 +160,13 @@ export default function PlaceForm({
             borderRadius: "12px",
             background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
             border: `2px solid ${colors.lightGray}`,
-            padding: "14px 16px",
-            fontSize: "16px",
+            padding: "min(12px, 1.5vh) min(14px, 2vw)",
+            fontSize: "min(16px, 4vw)",
             outline: "none",
             transition: "all 0.2s",
             color: colors.secondary,
-            minHeight: "90px",
-            resize: "vertical",
+            minHeight: "min(80px, 10vh)",
+            resize: "none",
           }}
           placeholder="Leírás"
           value={description}
@@ -182,8 +188,8 @@ export default function PlaceForm({
             borderRadius: "12px",
             background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
             border: `2px solid ${colors.lightGray}`,
-            padding: "14px 16px",
-            fontSize: "16px",
+            padding: "min(12px, 1.5vh) min(14px, 2vw)",
+            fontSize: "min(16px, 4vw)",
             outline: "none",
             transition: "all 0.2s",
             color: colors.secondary,
@@ -205,15 +211,15 @@ export default function PlaceForm({
         <div
           style={{
             backgroundColor: colors.background,
-            padding: "16px",
+            padding: "min(12px, 1.5vh)",
             borderRadius: "12px",
             border: `2px solid ${colors.lightGray}`,
           }}
         >
           <h4
             style={{
-              margin: "0 0 16px 0",
-              fontSize: "14px",
+              margin: "0 0 min(12px, 1.5vh) 0",
+              fontSize: "min(14px, 3.5vw)",
               fontWeight: "600",
               color: colors.secondary,
             }}
@@ -222,18 +228,20 @@ export default function PlaceForm({
           </h4>
 
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "min(8px, 1vh)",
+            }}
           >
             <input
               type="number"
-              step="0.1"
-              placeholder="Bérleti díj (ezer Ft/hó, pl: 250.5)"
-              value={rentPrice ? (rentPrice / 1000).toString() : ""}
+              step="1"
+              placeholder="Bérleti díj (Ft/hó)"
+              value={rentPrice ?? ""}
               onChange={(e) => {
                 const value = e.target.value;
-                setRentPrice(
-                  value ? Math.round(parseFloat(value) * 1000) : undefined
-                );
+                setRentPrice(value ? parseInt(value) : undefined);
               }}
               style={{
                 width: "100%",
@@ -241,8 +249,8 @@ export default function PlaceForm({
                 borderRadius: "8px",
                 background: colors.white,
                 border: `2px solid ${colors.lightGray}`,
-                padding: "12px 14px",
-                fontSize: "14px",
+                padding: "min(8px, 1vh) min(10px, 1.5vw)",
+                fontSize: "min(14px, 3.5vw)",
                 outline: "none",
                 transition: "all 0.2s",
               }}
@@ -256,14 +264,12 @@ export default function PlaceForm({
 
             <input
               type="number"
-              step="0.1"
-              placeholder="Rezsi költség (tízezer Ft/hó, pl: 5.2)"
-              value={utilityCost ? (utilityCost / 10000).toString() : ""}
+              step="1"
+              placeholder="Rezsi költség (Ft/hó)"
+              value={utilityCost ?? ""}
               onChange={(e) => {
                 const value = e.target.value;
-                setUtilityCost(
-                  value ? Math.round(parseFloat(value) * 10000) : undefined
-                );
+                setUtilityCost(value ? parseInt(value) : undefined);
               }}
               style={{
                 width: "100%",
@@ -271,8 +277,8 @@ export default function PlaceForm({
                 borderRadius: "8px",
                 background: colors.white,
                 border: `2px solid ${colors.lightGray}`,
-                padding: "12px 14px",
-                fontSize: "14px",
+                padding: "min(8px, 1vh) min(10px, 1.5vw)",
+                fontSize: "min(14px, 3.5vw)",
                 outline: "none",
                 transition: "all 0.2s",
               }}
@@ -286,14 +292,12 @@ export default function PlaceForm({
 
             <input
               type="number"
-              step="0.1"
-              placeholder="Közös költség (tízezer Ft/hó, pl: 1.5)"
-              value={commonCost ? (commonCost / 10000).toString() : ""}
+              step="1"
+              placeholder="Közös költség (Ft/hó)"
+              value={commonCost ?? ""}
               onChange={(e) => {
                 const value = e.target.value;
-                setCommonCost(
-                  value ? Math.round(parseFloat(value) * 10000) : undefined
-                );
+                setCommonCost(value ? parseInt(value) : undefined);
               }}
               style={{
                 width: "100%",
@@ -301,8 +305,8 @@ export default function PlaceForm({
                 borderRadius: "8px",
                 background: colors.white,
                 border: `2px solid ${colors.lightGray}`,
-                padding: "12px 14px",
-                fontSize: "14px",
+                padding: "min(8px, 1vh) min(10px, 1.5vw)",
+                fontSize: "min(14px, 3.5vw)",
                 outline: "none",
                 transition: "all 0.2s",
               }}
@@ -320,15 +324,15 @@ export default function PlaceForm({
         <div
           style={{
             backgroundColor: colors.background,
-            padding: "16px",
+            padding: "min(12px, 1.5vh)",
             borderRadius: "12px",
             border: `2px solid ${colors.lightGray}`,
           }}
         >
           <h4
             style={{
-              margin: "0 0 16px 0",
-              fontSize: "14px",
+              margin: "0 0 min(12px, 1.5vh) 0",
+              fontSize: "min(14px, 3.5vw)",
               fontWeight: "600",
               color: colors.secondary,
             }}
@@ -337,7 +341,11 @@ export default function PlaceForm({
           </h4>
 
           <div
-            style={{ display: "flex", flexDirection: "column", gap: "12px" }}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "min(8px, 1vh)",
+            }}
           >
             <input
               type="number"
@@ -350,8 +358,8 @@ export default function PlaceForm({
                 borderRadius: "8px",
                 background: colors.white,
                 border: `2px solid ${colors.lightGray}`,
-                padding: "12px 14px",
-                fontSize: "14px",
+                padding: "min(8px, 1vh) min(10px, 1.5vw)",
+                fontSize: "min(14px, 3.5vw)",
                 outline: "none",
                 transition: "all 0.2s",
               }}
@@ -369,12 +377,12 @@ export default function PlaceForm({
                 onClick={() => setHasElevator(true)}
                 style={{
                   flex: 1,
-                  padding: "12px",
+                  padding: "min(8px, 1vh)",
                   border: `2px solid ${
                     hasElevator === true ? colors.success : colors.lightGray
                   }`,
                   borderRadius: "8px",
-                  fontSize: "13px",
+                  fontSize: "min(13px, 3vw)",
                   backgroundColor:
                     hasElevator === true ? colors.success : colors.white,
                   color: hasElevator === true ? colors.white : colors.gray,
@@ -390,12 +398,12 @@ export default function PlaceForm({
                 onClick={() => setHasElevator(false)}
                 style={{
                   flex: 1,
-                  padding: "12px",
+                  padding: "min(8px, 1vh)",
                   border: `2px solid ${
                     hasElevator === false ? colors.danger : colors.lightGray
                   }`,
                   borderRadius: "8px",
-                  fontSize: "13px",
+                  fontSize: "min(13px, 3vw)",
                   backgroundColor:
                     hasElevator === false ? colors.danger : colors.white,
                   color: hasElevator === false ? colors.white : colors.gray,
@@ -410,10 +418,16 @@ export default function PlaceForm({
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "min(8px, 1vh)",
+          }}
+        >
           <label
             style={{
-              fontSize: "14px",
+              fontSize: "min(14px, 3.5vw)",
               fontWeight: "600",
               color: colors.secondary,
               display: "flex",
@@ -429,7 +443,7 @@ export default function PlaceForm({
               position: "relative",
               border: `2px dashed ${colors.lightGray}`,
               borderRadius: "12px",
-              padding: "20px",
+              padding: "min(16px, 2vh)",
               textAlign: "center",
               background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
               transition: "all 0.2s",
@@ -611,16 +625,22 @@ export default function PlaceForm({
           )}
         </div>
 
-        <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "min(8px, 1vw)",
+            marginTop: "min(8px, 1vh)",
+          }}
+        >
           <button
             type="submit"
             style={{
               flex: 1,
               background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
               color: colors.white,
-              padding: "14px 24px",
+              padding: "min(10px, 1.5vh) min(16px, 2vw)",
               borderRadius: "12px",
-              fontSize: "16px",
+              fontSize: "min(16px, 4vw)",
               fontWeight: "600",
               border: "none",
               cursor: "pointer",
@@ -646,9 +666,9 @@ export default function PlaceForm({
             style={{
               background: `linear-gradient(135deg, ${colors.lightGray} 0%, #d1d5db 100%)`,
               color: colors.gray,
-              padding: "14px 24px",
+              padding: "min(10px, 1.5vh) min(16px, 2vw)",
               borderRadius: "12px",
-              fontSize: "16px",
+              fontSize: "min(16px, 4vw)",
               fontWeight: "600",
               border: "none",
               cursor: "pointer",

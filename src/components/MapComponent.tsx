@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import type { Place } from "../types/Place";
 import PinComponent from "./PinComponent";
+import BKKStopsAPI from "./BKKStopsAPI";
+import { useState } from "react";
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -47,9 +49,35 @@ export default function MapComponent({
   showAllPopups = false,
   onTogglePopups,
 }: MapComponentProps) {
+  const [showBKKStops, setShowBKKStops] = useState(false);
+
   return (
     <div className="flex-1 h-full relative">
-      {/* Toggle gomb az állandó megjelenítéshez */}
+      {/* Toggle gombok */}
+      <button
+        onClick={() => setShowBKKStops(!showBKKStops)}
+        style={{
+          position: "absolute",
+          top: "50px",
+          left: "50px",
+          zIndex: 1000,
+          padding: "8px 12px",
+          backgroundColor: showBKKStops ? "#3b82f6" : "#ffffff",
+          color: showBKKStops ? "#ffffff" : "#3b82f6",
+          border: "2px solid #3b82f6",
+          borderRadius: "8px",
+          fontSize: "12px",
+          fontWeight: "600",
+          cursor: "pointer",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          transition: "all 0.2s",
+        }}
+        title="Tömegközlekedési megállók megjelenítése"
+      >
+        {showBKKStops ? "🚌 Megállók elrejtése" : "🚌 Megállók mutatása"}
+      </button>
+
+      {/* Állandó popup toggle */}
       <button
         onClick={() => {
           if (onTogglePopups) {
@@ -87,6 +115,7 @@ export default function MapComponent({
           attribution="&copy; OpenStreetMap contributors"
         />
         <MapClickHandler onMapClick={onMapClick} />
+        <BKKStopsAPI visible={showBKKStops} />
         {places.map((place) => (
           <PinComponent
             key={place.id}

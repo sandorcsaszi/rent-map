@@ -25,30 +25,23 @@ export default function MapWithPlaces() {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    console.log("Loading data from localStorage...");
     const savedPlaces = localStorage.getItem("mapPlaces");
     const savedIdCounter = localStorage.getItem("mapIdCounter");
 
     if (savedPlaces) {
       try {
         const parsedPlaces = JSON.parse(savedPlaces);
-        console.log("Found saved places:", parsedPlaces.length, "items");
         if (parsedPlaces.length > 0) {
           setPlaces(parsedPlaces);
         }
       } catch (error) {
         console.error("Error loading places from localStorage:", error);
       }
-    } else {
-      console.log("No saved places found");
     }
 
     if (savedIdCounter) {
       const counter = parseInt(savedIdCounter);
-      console.log("Found saved ID counter:", counter);
       setIdCounter(counter);
-    } else {
-      console.log("No saved ID counter found, starting from 1");
     }
   }, []);
 
@@ -57,7 +50,6 @@ export default function MapWithPlaces() {
     // Only save if places array is not empty or if we're explicitly setting it to empty
     if (places.length > 0) {
       localStorage.setItem("mapPlaces", JSON.stringify(places));
-      console.log("Places saved to localStorage:", places.length, "items");
     }
   }, [places]);
 
@@ -132,7 +124,6 @@ export default function MapWithPlaces() {
     // Explicitly save to localStorage
     localStorage.setItem("mapPlaces", JSON.stringify(updatedPlaces));
     localStorage.setItem("mapIdCounter", (idCounter + 1).toString());
-    console.log("New place added and saved to localStorage:", newPlace.title);
   };
 
   // Edit an existing place
@@ -149,7 +140,6 @@ export default function MapWithPlaces() {
 
     // Explicitly save to localStorage
     localStorage.setItem("mapPlaces", JSON.stringify(updatedPlaces));
-    console.log("Place edited and saved to localStorage:", id);
   };
 
   // Delete a place
@@ -160,14 +150,8 @@ export default function MapWithPlaces() {
     // Explicitly save to localStorage after deletion
     if (updatedPlaces.length === 0) {
       localStorage.removeItem("mapPlaces");
-      console.log("All places deleted, localStorage cleared");
     } else {
       localStorage.setItem("mapPlaces", JSON.stringify(updatedPlaces));
-      console.log(
-        "Place deleted, localStorage updated:",
-        updatedPlaces.length,
-        "items remaining"
-      );
     }
 
     if (selectedPlace && selectedPlace.id === id) setSelectedPlace(null);
