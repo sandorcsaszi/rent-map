@@ -59,11 +59,11 @@ Az alkalmazás képes megjeleníteni a budapesti tömegközlekedési megállóka
 
 ## 🛠️ Technikai Részletek
 
-- **React 19** + **TypeScript** - Modern, típusbiztos fejlesztés
-- **Leaflet** térképek - Ingyenes és gyors
-- **Vite** - Villámgyors fejlesztői környezet
-- **Tailwind CSS** - Gyönyörű, reszponzív design
-- **OpenStreetMap** - Pontos címkeresés
+- **React 19** + **TypeScript**
+- **Leaflet** térképek
+- **Vite**
+- **Tailwind CSS**
+- **OpenStreetMap**
 
 ## 💝 Köszönetnyilvánítás
 
