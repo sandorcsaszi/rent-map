@@ -42,7 +42,16 @@ export default function PlaceForm({
   );
   const [floor, setFloor] = useState<number | undefined>(place?.floor);
   const [hasElevator, setHasElevator] = useState<boolean | undefined>(
-    place?.hasElevator
+    place?.hasElevator !== undefined ? place.hasElevator : place?.has_elevator
+  );
+
+  // Debug log a form inicializálásakor
+  console.log("🔧 PlaceForm DEBUG - place object:", place);
+  console.log("🔧 PlaceForm DEBUG - place.hasElevator:", place?.hasElevator);
+  console.log("🔧 PlaceForm DEBUG - place.has_elevator:", place?.has_elevator);
+  console.log(
+    "🔧 PlaceForm DEBUG - final hasElevator state:",
+    place?.hasElevator !== undefined ? place.hasElevator : place?.has_elevator
   );
 
   return (

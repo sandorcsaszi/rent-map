@@ -64,6 +64,8 @@ export default function MapWithPlaces() {
     rentPrice: place.rent_price,
     utilityCost: place.utility_cost,
     commonCost: place.common_cost,
+    hasElevator: place.has_elevator, // Backend-ről: has_elevator -> Frontend: hasElevator
+    floor: place.floor,
   }));
 
   const handleMapClick = (position: [number, number]) => {
