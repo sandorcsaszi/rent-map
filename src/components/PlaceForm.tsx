@@ -59,7 +59,6 @@ export default function PlaceForm({
           zIndex: 1099,
           animation: "fadeIn 0.3s ease-out",
         }}
-        onClick={onCancel}
       />
 
       {/* Form modal */}
