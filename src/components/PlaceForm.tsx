@@ -108,7 +108,7 @@ export default function PlaceForm({
           e.preventDefault();
           const pos = position || place!.position || [place!.lat, place!.lng];
           onSave({
-            user_id: place?.user_id || '',
+            user_id: place?.user_id || "",
             name: title,
             description,
             lat: pos[0],

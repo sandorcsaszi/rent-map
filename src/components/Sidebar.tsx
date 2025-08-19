@@ -664,8 +664,8 @@ function SidebarAddForm({
       const coordinates = await geocodeAddress(newPlace.address);
       if (coordinates) {
         onAddByAddress({
-          user_id: '',
-          name: newPlace.title || '',
+          user_id: "",
+          name: newPlace.title || "",
           title: newPlace.title,
           price: "",
           description: newPlace.description || "",
@@ -1507,7 +1507,9 @@ export default function Sidebar({
   // Filter places based on search term first, then apply filters
   const searchFilteredPlaces = places.filter(
     (place) =>
-      (place.title || place.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (place.title || place.name || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       (place.description &&
         place.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
