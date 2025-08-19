@@ -84,8 +84,6 @@ Mivel programozó vagyok, úgy döntöttem, inkább készítek egy saját megold
    - Válassz a javaslatokból
    - Töltsd ki a részleteket
 
-![Hozzáadás Folyamat](screenshots/add-process.png)
-
 ### 3️⃣ Albérletek Keresése és Szűrése
 1. **Keresés név alapján**:
    - Az oldalsávban használd a keresőmezőt
@@ -94,16 +92,8 @@ Mivel programozó vagyok, úgy döntöttem, inkább készítek egy saját megold
 2. **Szűrés feltételek szerint**:
    - Kattints a "Szűrők" gombra
    - Állítsd be az ár tartományt
-   - Válassz emelet preferenciákat
-   - Szűrj lift alapján
-
-![Keresés és Szűrés](screenshots/search-filter.png)
-
-### 4️⃣ Albérlet Szerkesztése
-1. Kattints egy meglévő pin-re
-2. A részletek ablakban kattints a "Szerkesztés" gombra
-3. Módosítsd a szükséges adatokat
-4. Mentsd el a változtatásokat
+   - Válassz ki maximum vagy minimum melyik szinten laknál
+   - Szűrj, hogy van lift vagy nincs lift az épületben
 
 ### 5️⃣ BKK Megállók Megjelenítése
 1. Kattints a "Megállók megjelenítése" gombra a térkép bal felső sarkában
@@ -155,15 +145,14 @@ npm run preview
 A `.env` fájlban állítsd be a következő változókat:
 
 ```env
-# BKK Futár API kulcs (opcionális)
+# BKK Futár API kulcs
 VITE_BKK_API_KEY=your_bkk_api_key
 
-# Supabase konfiguráció (kötelező)
+# Supabase konfiguráció
 VITE_SUPABASE_URL=https://your-project-ref.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 
 # Auth callback URLs
-VITE_LOCAL_CALLBACK_URL=http://localhost:5173/auth/callback
 VITE_PRODUCTION_CALLBACK_URL=https://your-domain.com/auth/callback
 ```
 
@@ -224,55 +213,6 @@ src/
 - **Cache**: Intelligens cache-elés a teljesítményért
 - **Error handling**: Graceful degradation API hiba esetén
 
-## 📸 Screenshot Útmutató
-
-A következő screenshotokat készítsd el a dokumentációhoz:
-
-### 1. `hero-screenshot.png`
-- **Mit mutasson**: Az alkalmazás főoldala betöltés után
-- **Hogyan**: Teljes képernyős nézet, néhány pin a térképen, oldalsáv nyitva
-- **Méret**: 1920x1080 vagy hasonló
-
-### 2. `map-features.png`
-- **Mit mutasson**: Térkép funkcionalitás
-- **Hogyan**: Zoom-olt nézet pin-ekkel, popup ablak nyitva, címkék láthatók
-- **Kiemelendő**: Pin részletek, térkép interakció
-
-### 3. `add-place.png`
-- **Mit mutasson**: Új hely hozzáadása folyamat
-- **Hogyan**: Form kitöltve adatokkal, geocoding javaslatok láthatók
-- **Kiemelendő**: Automatikus címkiegészítés
-
-### 4. `filters.png`
-- **Mit mutasson**: Szűrési lehetőségek
-- **Hogyan**: Szűrők panel kinyitva, különböző szűrők beállítva
-- **Kiemelendő**: Ár, emelet, lift szűrők
-
-### 5. `bkk-stops.png`
-- **Mit mutasson**: BKK megállók megjelenítése
-- **Hogyan**: Térkép BKK megállókkal, egy megálló popup nyitva
-- **Kiemelendő**: Tömegközlekedési ikonok
-
-### 6. `auth-system.png`
-- **Mit mutasson**: Bejelentkezési folyamat
-- **Hogyan**: Login modal nyitva Google/GitHub opciókkal
-- **Kiemelendő**: OAuth gombok
-
-### 7. `mobile-view.png`
-- **Mit mutasson**: Mobil nézet
-- **Hogyan**: Telefon szimulálva böngészőben (F12 -> mobil nézet)
-- **Kiemelendő**: Reszponzív design, touch-friendly elemek
-
-### 8. `search-filter.png`
-- **Mit mutasson**: Keresés és szűrés eredménye
-- **Hogyan**: Keresőmező kitöltve, szűrt eredmények listája
-- **Kiemelendő**: Találatok száma, aktív szűrők
-
-### 9. `add-process.png`
-- **Mit mutasson**: Hozzáadás lépésről-lépésre
-- **Hogyan**: Collage vagy több screenshot egy képen
-- **Kiemelendő**: 1) Térkép kattintás, 2) Form kitöltés, 3) Mentett eredmény
-
 ## 🤝 Közreműködés
 
 Örülök minden hozzájárulásnak! Ha szeretnél fejleszteni az alkalmazáson:
@@ -289,43 +229,9 @@ A következő screenshotokat készítsd el a dokumentációhoz:
 - Responsive design betartása
 - Accessibility szabályok követése
 
-## 📝 Changelog
-
-### v2.0.0 (2025-01-19)
-- ✨ Collapsible sidebar funkcionalitás
-- 🎨 Modernizált UI/UX design
-- 🔧 Console log cleanup
-- 🚀 Teljesítmény optimalizációk
-- 📱 Továbbfejlesztett mobil támogatás
-
-### v1.0.0 (2024)
-- 🎉 Kezdeti release
-- 🗺️ Alapvető térkép funkcionalitás
-- 🔐 OAuth bejelentkezés
-- 📍 CRUD műveletek helyekhez
-
 ## 📄 Licenc
 
 Ez a projekt MIT licenc alatt áll. Lásd a [LICENSE](LICENSE) fájlt a részletekért.
-
-## 💝 Köszönetnyilvánítás
-
-- **OpenStreetMap** közösségnek a térkép adatokért
-- **Supabase** csapatnak a fantasztikus BaaS szolgáltatásért
-- **BKK** -nak a nyílt tömegközlekedési adatokért
-- **React** és **Leaflet** közösségeknek
-
----
-
-**Inspiráció**: A végtelen scrollozás a hirdetési oldalakon 😅  
-**Cél**: Hogy senki ne szenvedjen annyit az albérletkeresésben 🏡  
-**Készítette**: [Császi Sándor](https://linkedin.com/in/sandorcsaszi) 👨‍💻  
-
-[![GitHub](https://img.shields.io/badge/GitHub-sandorcsaszi-181717?style=flat&logo=github)](https://github.com/sandorcsaszi)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Császi_Sándor-0077B5?style=flat&logo=linkedin)](https://linkedin.com/in/sandorcsaszi)
-VITE_LOCAL_CALLBACK_URL=http://localhost:5173/auth/callback
-VITE_PRODUCTION_CALLBACK_URL=https://your-app-name.vercel.app/auth/callback
-```
 
 **API kulcsok beszerzése:**
 
@@ -375,6 +281,10 @@ Köszönöm mindenkinek, aki használja ezt az alkalmazást! Ha segített neked 
 
 ---
 
-**Inspiráció:** A végtelen scrollozás a hirdetési oldalakon 😅  
-**Cél:** Hogy senki ne szenvedjen annyit az albérletkeresésben, mint én 🏡
-**Készítette:** Császi Sándor 👨‍💻  
+**Inspiráció**: A végtelen scrollozás a hirdetési oldalakon 😅  
+**Cél**: Hogy senki ne szenvedjen annyit az albérletkeresésben 🏡  
+**Készítette**: [Császi Sándor](https://linkedin.com/in/sandorcsaszi) 👨‍💻  
+
+[![GitHub](https://img.shields.io/badge/GitHub-sandorcsaszi-181717?style=flat&logo=github)](https://github.com/sandorcsaszi)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Császi_Sándor-0077B5?style=flat&logo=linkedin)](https://linkedin.com/in/sandorcsaszi)
+```
