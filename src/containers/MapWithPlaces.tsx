@@ -359,27 +359,32 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative transition-all duration-300">
-          {/* Burger Menu Button - NAGY PIROS GOMB */}
+          {/* Burger Menu Button - a térkép jobb felső sarkában, a többi gombbal egy vonalban */}
           {user && sidebarCollapsed && (
             <button
               onClick={() => {
                 console.log("Burger menu clicked! Opening sidebar...");
                 setSidebarCollapsed(false);
               }}
-              className="fixed top-4 right-4 z-[2000] w-20 h-20 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               style={{
-                borderRadius: "12px",
-                boxShadow: "0 8px 32px rgba(220, 38, 38, 0.6)",
-                border: "3px solid rgba(255, 255, 255, 0.3)",
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                zIndex: 1000,
+                padding: "8px 12px",
+                backgroundColor: "#ef4444",
+                color: "#ffffff",
+                border: "2px solid #ef4444",
+                borderRadius: "8px",
+                fontSize: "12px",
+                fontWeight: "600",
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                transition: "all 0.2s",
               }}
               title="Oldalsáv megnyitása"
             >
-              {/* Hamburger icon - még nagyobb */}
-              <div className="flex flex-col items-center justify-center space-y-2">
-                <div className="w-8 h-1 bg-white rounded-full transition-all duration-300"></div>
-                <div className="w-8 h-1 bg-white rounded-full transition-all duration-300"></div>
-                <div className="w-8 h-1 bg-white rounded-full transition-all duration-300"></div>
-              </div>
+              📋 Oldalsáv megnyitása
             </button>
           )}
 
