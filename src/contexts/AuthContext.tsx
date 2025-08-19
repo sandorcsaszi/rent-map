@@ -18,6 +18,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Dinamikus redirect URL detektálása környezeti változókból
+  const getRedirectUrl = () => {
+    const isLocalhost =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
+
+    if (isLocalhost) {
+      // Local development - használja a .env-ből a local URL-t
+      return (
+        import.meta.env.VITE_LOCAL_CALLBACK_URL ||
+        "http://localhost:5173/auth/callback"
+      );
+    } else {
+      // Production - használja a .env-ből a production URL-t
+      return (
+        import.meta.env.VITE_PRODUCTION_CALLBACK_URL ||
+        `${window.location.origin}/auth/callback`
+      );
+    }
+  };
+
   // Profil létrehozása, ha nem létezik
   const ensureUserProfile = async (user: User) => {
     try {
@@ -197,11 +218,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("Initiating Google sign in...");
 
+      const redirectUrl = getRedirectUrl();
+      console.log("Using redirect URL:", redirectUrl);
+
       // Force account selection and consent every time
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent select_account", // Force account selection
@@ -227,11 +251,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("Initiating GitHub sign in...");
 
+      const redirectUrl = getRedirectUrl();
+      console.log("Using redirect URL:", redirectUrl);
+
       // GitHub sign in
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             scope: "read:user user:email",
             allow_signup: "true",
