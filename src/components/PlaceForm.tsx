@@ -31,7 +31,6 @@ export default function PlaceForm({
   const [title, setTitle] = useState(place?.title || "");
   const [description, setDescription] = useState(place?.description || "");
   const [link, setLink] = useState(place?.link || "");
-  const [images, setImages] = useState<string[]>(place?.images || []);
   const [rentPrice, setRentPrice] = useState<number | undefined>(
     place?.rentPrice
   );
@@ -45,29 +44,6 @@ export default function PlaceForm({
   const [hasElevator, setHasElevator] = useState<boolean | undefined>(
     place?.hasElevator
   );
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const newImages: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const result = event.target?.result as string;
-          newImages.push(result);
-          if (newImages.length === files.length) {
-            setImages((prev) => [...prev, ...newImages]);
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
 
   return (
     <div
@@ -110,26 +86,25 @@ export default function PlaceForm({
           onSave({
             user_id: place?.user_id || "",
             name: title,
+            title: title,
             description,
             lat: pos[0],
             lng: pos[1],
             rent_price: rentPrice,
             utilities_price: utilityCost,
             deposit_price: commonCost,
+            floor: floor,
+            hasElevator: hasElevator,
+            link: link || undefined,
             is_public: true,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            // Kompatibilitás
+            // Kompatibilitási mezők
             position: pos,
-            title,
             price: "",
-            link: link || undefined,
-            images: images.length > 0 ? images : undefined,
             rentPrice,
             utilityCost,
             commonCost,
-            floor,
-            hasElevator,
           });
         }}
         style={{
@@ -428,213 +403,6 @@ export default function PlaceForm({
               </button>
             </div>
           </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "min(8px, 1vh)",
-          }}
-        >
-          <label
-            style={{
-              fontSize: "min(14px, 3.5vw)",
-              fontWeight: "600",
-              color: colors.secondary,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            📷 Képek feltöltése
-          </label>
-
-          <div
-            style={{
-              position: "relative",
-              border: `2px dashed ${colors.lightGray}`,
-              borderRadius: "12px",
-              padding: "min(16px, 2vh)",
-              textAlign: "center",
-              background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
-              transition: "all 0.2s",
-              cursor: "pointer",
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              e.currentTarget.style.borderColor = colors.primary;
-              e.currentTarget.style.background = `${colors.primary}10`;
-            }}
-            onDragLeave={(e) => {
-              e.currentTarget.style.borderColor = colors.lightGray;
-              e.currentTarget.style.background = `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`;
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              e.currentTarget.style.borderColor = colors.lightGray;
-              e.currentTarget.style.background = `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`;
-
-              const files = e.dataTransfer.files;
-              if (files.length > 0) {
-                const event = { target: { files } } as any;
-                handleImageUpload(event);
-              }
-            }}
-          >
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageUpload}
-              style={{
-                position: "absolute",
-                top: "0",
-                left: "0",
-                width: "100%",
-                height: "100%",
-                opacity: "0",
-                cursor: "pointer",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "8px",
-                pointerEvents: "none",
-              }}
-            >
-              <div
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "50%",
-                  background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "20px",
-                  color: colors.white,
-                }}
-              >
-                📷
-              </div>
-              <div
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  color: colors.secondary,
-                }}
-              >
-                Kattints vagy húzd ide a képeket
-              </div>
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: colors.gray,
-                }}
-              >
-                Támogatott formátumok: JPG, PNG, GIF
-              </div>
-            </div>
-          </div>
-
-          {images.length > 0 && (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(90px, 1fr))",
-                gap: "12px",
-                marginTop: "8px",
-                padding: "12px",
-                background: `${colors.background}50`,
-                borderRadius: "12px",
-                border: `1px solid ${colors.lightGray}`,
-              }}
-            >
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  style={{
-                    position: "relative",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    boxShadow: `0 2px 8px ${colors.primary}15`,
-                    transition: "transform 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "scale(1.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
-                >
-                  <img
-                    src={image}
-                    alt={`Kép ${index + 1}`}
-                    style={{
-                      width: "100%",
-                      height: "90px",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    style={{
-                      position: "absolute",
-                      top: "4px",
-                      right: "4px",
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "50%",
-                      background: `${colors.danger}dd`,
-                      color: colors.white,
-                      border: "none",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      backdropFilter: "blur(4px)",
-                      transition: "all 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      const target = e.target as HTMLButtonElement;
-                      target.style.background = colors.danger;
-                      target.style.transform = "scale(1.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      const target = e.target as HTMLButtonElement;
-                      target.style.background = `${colors.danger}dd`;
-                      target.style.transform = "scale(1)";
-                    }}
-                  >
-                    ✕
-                  </button>
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "0",
-                      left: "0",
-                      right: "0",
-                      background:
-                        "linear-gradient(transparent, rgba(0,0,0,0.6))",
-                      color: colors.white,
-                      fontSize: "10px",
-                      padding: "4px",
-                      textAlign: "center",
-                    }}
-                  >
-                    Kép {index + 1}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         <div

@@ -131,16 +131,76 @@ export default function MapWithPlaces() {
     setSelectedPlace(null);
   };
 
-  const handleAddPlaceFromSidebar = () => {
-    // Nem használjuk, mert térkép kattintással adjuk hozzá
+  const handleAddPlaceFromSidebar = async (placeData: Omit<Place, "id">) => {
+    if (!user) return;
+
+    try {
+      const newPlace = {
+        user_id: user.id,
+        name: placeData.name || placeData.title || "",
+        title: placeData.title || placeData.name || "",
+        description: placeData.description || "",
+        address: placeData.address || "",
+        lat: placeData.lat,
+        lng: placeData.lng,
+        rent_price: placeData.rent_price || placeData.rentPrice || 0,
+        deposit_price: placeData.deposit_price || placeData.commonCost || 0,
+        utilities_price:
+          placeData.utilities_price || placeData.utilityCost || 0,
+        room_count: placeData.room_count || 1,
+        property_type: placeData.property_type || "apartment",
+        floor: placeData.floor,
+        has_elevator: placeData.hasElevator,
+        link: placeData.link,
+        is_public: placeData.is_public ?? true,
+      };
+
+      await createPlace(newPlace);
+    } catch (error) {
+      console.error("Hiba a hely mentésekor:", error);
+      alert("Hiba történt a hely mentésekor!");
+    }
   };
 
-  const handleUpdatePlaceFromSidebar = () => {
-    // Nem használjuk
+  const handleUpdatePlaceFromSidebar = async (placeData: Place) => {
+    if (!user) return;
+
+    try {
+      const updates = {
+        name: placeData.name || placeData.title || "",
+        title: placeData.title || placeData.name || "",
+        description: placeData.description || "",
+        address: placeData.address || "",
+        rent_price: placeData.rent_price || placeData.rentPrice || 0,
+        deposit_price: placeData.deposit_price || placeData.commonCost || 0,
+        utilities_price:
+          placeData.utilities_price || placeData.utilityCost || 0,
+        room_count: placeData.room_count || 1,
+        property_type: placeData.property_type || "apartment",
+        floor: placeData.floor,
+        has_elevator: placeData.hasElevator,
+        link: placeData.link,
+        is_public: placeData.is_public ?? true,
+      };
+
+      await updatePlace(placeData.id, updates);
+    } catch (error) {
+      console.error("Hiba a hely frissítésekor:", error);
+      alert("Hiba történt a hely frissítésekor!");
+    }
   };
 
-  const handleDeletePlaceFromSidebar = () => {
-    // Nem használjuk
+  const handleDeletePlaceFromSidebar = async (id: number) => {
+    if (!user) return;
+
+    try {
+      // Convert number to string if needed
+      const placeId = typeof id === "string" ? id : id.toString();
+      await deletePlace(placeId);
+    } catch (error) {
+      console.error("Hiba a hely törlésekor:", error);
+      alert("Hiba történt a hely törlésekor!");
+    }
   };
 
   // Szűrt helyek számítása
