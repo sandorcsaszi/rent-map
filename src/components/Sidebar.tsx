@@ -1255,15 +1255,15 @@ export default function Sidebar({
     return (
       <div
         style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
+          flexShrink: 0,
           background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
           borderTop: "1px solid rgba(59, 130, 246, 0.2)",
           padding: "12px 16px",
+          // Safari-kompatibilis backdrop filter
           backdropFilter: "blur(10px)",
           WebkitBackdropFilter: "blur(10px)",
+          // Safari fallback ha a backdrop-filter nem működik
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
         }}
       >
         <div
@@ -1441,6 +1441,11 @@ export default function Sidebar({
           display: "flex",
           flexDirection: "column",
           transition: "right 0.3s ease-in-out",
+          // Safari-specifikus javítások
+          WebkitTransform: "translateZ(0)", // Hardware acceleration Safari-ban
+          transform: "translateZ(0)",
+          WebkitBackfaceVisibility: "hidden",
+          backfaceVisibility: "hidden",
         }}
         className="w-full md:w-96"
       >
@@ -1546,11 +1551,13 @@ export default function Sidebar({
             flex: "1",
             overflowY: "auto",
             padding: "20px",
-            paddingBottom: user ? "80px" : "20px", // Extra padding ha van bejelentkezett user
             overflowX: "hidden",
             backgroundColor: colors.white,
+            // Safari-specifikus scrolling javítás
+            WebkitOverflowScrolling: "touch",
+            minHeight: 0, // Safari flexbox fix
           }}
-          className="flex-1 overflow-y-auto p-5 md:p-5 sm:p-4 pb-20 md:pb-20"
+          className="flex-1 overflow-y-auto p-5 md:p-5 sm:p-4"
         >
           {activeTab === "search" && (
             <div>
