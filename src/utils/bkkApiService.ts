@@ -231,9 +231,9 @@ class BKKApiService {
     this.lastRequestTime = Date.now();
 
     try {
-      // BKK Futár API: stops-for-location endpoint - 500m
+      // BKK Futár API: stops-for-location endpoint - 1000m
       const response = await fetch(
-        `${this.baseUrl}/stops-for-location.json?key=${this.apiKey}&lat=${centerLat}&lon=${centerLon}&radius=500&maxCount=100`,
+        `${this.baseUrl}/stops-for-location.json?key=${this.apiKey}&lat=${centerLat}&lon=${centerLon}&radius=1000&maxCount=100`,
         {
           method: 'GET',
           headers: {
@@ -308,10 +308,10 @@ class BKKApiService {
     if (nearest && nearest.distance < this.MIN_DISTANCE_FOR_NEW_REQUEST) {
       this.stats.nearCacheHits++;
       
-      // Ha van elég közeli cache, azt használjuk és szűrjük a 500m-es körre
+      // Ha van elég közeli cache, azt használjuk és szűrjük a 1000m-es körre
       const filteredStops = nearest.data.filter(stop => {
         const distance = this.calculateDistance(centerLat, centerLon, stop.lat, stop.lon);
-        return distance <= 500; // 500m radius
+        return distance <= 1000; // 1000m radius
       });
       
       // Cache-eljük az új pozícióra is
@@ -351,7 +351,7 @@ class BKKApiService {
         console.warn('BKK API hívás sikertelen, közeli cache használata');
         return nearest.data.filter(stop => {
           const distance = this.calculateDistance(centerLat, centerLon, stop.lat, stop.lon);
-          return distance <= 500;
+          return distance <= 1000;
         });
       }
       
