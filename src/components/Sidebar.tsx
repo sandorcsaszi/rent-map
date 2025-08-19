@@ -1459,45 +1459,6 @@ export default function Sidebar({
         }}
         className="w-full md:w-96"
       >
-        {/* Collapse/Expand Toggle Button - Desktop only */}
-        {onToggleCollapse && (
-          <button
-            onClick={onToggleCollapse}
-            style={{
-              position: "absolute",
-              left: "-48px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: "40px",
-              height: "80px",
-              backgroundColor: colors.primary,
-              border: "none",
-              borderRadius: "8px 0 0 8px",
-              color: colors.white,
-              cursor: "pointer",
-              zIndex: 1001,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "18px",
-              transition: "all 0.2s ease",
-              boxShadow: `-2px 0 10px ${colors.primary}20`,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.secondary;
-              e.currentTarget.style.transform = "translateY(-50%) scale(1.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.primary;
-              e.currentTarget.style.transform = "translateY(-50%) scale(1)";
-            }}
-            title={isCollapsed ? "Oldalsáv megnyitása" : "Oldalsáv becsukása"}
-            className="hidden md:flex"
-          >
-            {isCollapsed ? "◀" : "▶"}
-          </button>
-        )}
-
         {/* Header */}
         <div
           style={{
@@ -1507,15 +1468,17 @@ export default function Sidebar({
           }}
           className="px-5 pt-6 md:px-5 md:pt-6 sm:px-4 sm:pt-4 relative"
         >
-          {/* Mobile close button */}
+          {/* Modern Close Button - minden platformon */}
           {onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
-              className="md:hidden absolute top-4 right-4 w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-lg hover:bg-opacity-30 transition-all"
+              className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-200 hover:scale-110"
               style={{
-                fontSize: "16px",
+                fontSize: "18px",
                 fontWeight: "bold",
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
               }}
+              title="Oldalsáv becsukása"
             >
               ✕
             </button>

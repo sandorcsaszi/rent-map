@@ -20,17 +20,15 @@ export default function MapWithPlaces() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllPopups, setShowAllPopups] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    // Mobile eszközökön alapértelmezetten becsukott
-    if (typeof window !== "undefined") {
-      return window.innerWidth < 768;
-    }
-    return false;
+    // Alapértelmezetten mindig becsukott legyen
+    return true;
   });
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
+      // Ha nagyon kicsi a képernyő, automatikusan becsukjuk
+      if (window.innerWidth < 480) {
         setSidebarCollapsed(true);
       }
     };
@@ -321,28 +319,21 @@ export default function MapWithPlaces() {
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
 
-        <div
-          className={`flex-1 relative transition-all duration-300 ${
-            sidebarCollapsed ? "mr-0" : "mr-0 md:mr-96"
-          }`}
-        >
-          {/* Desktop hamburger menu when sidebar is collapsed */}
+        <div className="flex-1 relative transition-all duration-300">
+          {/* Modern Floating Action Button - minden esetben látható */}
           {sidebarCollapsed && (
             <button
               onClick={() => setSidebarCollapsed(false)}
-              className="hidden md:flex absolute top-4 right-4 z-50 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full items-center justify-center shadow-lg transition-all"
+              className="fixed top-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
+              style={{
+                fontSize: "20px",
+                boxShadow: "0 8px 32px rgba(59, 130, 246, 0.3)",
+              }}
+              title="Oldalsáv megnyitása"
             >
-              ☰
+              📋
             </button>
           )}
-
-          {/* Mobile hamburger menu */}
-          <button
-            onClick={() => setSidebarCollapsed(false)}
-            className="md:hidden absolute top-4 right-4 z-50 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all"
-          >
-            ☰
-          </button>
 
           <MapComponent
             places={filteredPlaces}
