@@ -1499,7 +1499,9 @@ export default function Sidebar({
             borderRadius: "12px",
             padding: "8px",
             transition: "all 0.2s",
-            background: showProfileMenu ? "rgba(59, 130, 246, 0.1)" : "transparent",
+            background: showProfileMenu
+              ? "rgba(59, 130, 246, 0.1)"
+              : "transparent",
           }}
           onClick={() => setShowProfileMenu(!showProfileMenu)}
         >
@@ -1509,8 +1511,8 @@ export default function Sidebar({
               width: "40px",
               height: "40px",
               borderRadius: "50%",
-              background: user.user_metadata?.avatar_url 
-                ? `url(${user.user_metadata.avatar_url})` 
+              background: user.user_metadata?.avatar_url
+                ? `url(${user.user_metadata.avatar_url})`
                 : "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
               backgroundSize: "cover",
               backgroundPosition: "center",
