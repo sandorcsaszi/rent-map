@@ -25,16 +25,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.location.hostname === "127.0.0.1";
 
     if (isLocalhost) {
-      // Local development - használja a .env-ből a local URL-t
-      return (
-        import.meta.env.VITE_LOCAL_CALLBACK_URL ||
-        "http://localhost:5173/auth/callback"
-      );
+      // Local development - főoldal
+      return import.meta.env.VITE_LOCAL_CALLBACK_URL || "http://localhost:5173/";
     } else {
-      // Production - használja a .env-ből a production URL-t
+      // Production - főoldal
       return (
         import.meta.env.VITE_PRODUCTION_CALLBACK_URL ||
-        `${window.location.origin}/auth/callback`
+        `${window.location.origin}/`
       );
     }
   };
