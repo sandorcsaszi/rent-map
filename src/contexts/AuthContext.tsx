@@ -41,8 +41,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Profil létrehozása, ha nem létezik
   const ensureUserProfile = async (user: User) => {
     try {
-      console.log("Profil ellenőrzése felhasználónak:", user.id);
-
       // Ellenőrizzük, hogy létezik-e már a profil
       const { data: existingProfile, error: fetchError } = await supabase
         .from("profiles")
@@ -51,13 +49,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (existingProfile && !fetchError) {
-        console.log("Profil már létezik:", existingProfile);
         return existingProfile;
       }
 
       // Ha nem létezik, létrehozzuk
-      console.log("Új profil létrehozása:", user.id);
-
       const newProfile = {
         id: user.id,
         username: user.email?.split("@")[0] || "user",
@@ -82,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
 
-      console.log("Profil sikeresen létrehozva:", createdProfile);
       return createdProfile;
     } catch (error) {
       console.error("Profil kezelési hiba:", error);
@@ -96,18 +90,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Automatikus session cleanup és inicializálás
     const initSession = async () => {
       try {
-        console.log("🔄 InitSession started");
-
         // Check for URL parameters that indicate failed auth
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get("error");
-        const errorDescription = urlParams.get("error_description");
 
         if (error) {
-          console.log("Auth error detected in URL:", error, errorDescription);
-
           // Ne töröljük a session-t URL hibák miatt, csak logoljuk
-          console.log("Auth error in URL, but keeping existing session");
 
           // Clean URL regardless
           window.history.replaceState(
@@ -117,56 +105,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           );
         }
 
-        console.log("📡 Getting session from Supabase...");
         const {
           data: { session },
           error: sessionError,
         } = await supabase.auth.getSession();
 
-        console.log("📊 Session result:", {
-          session: !!session,
-          error: sessionError,
-        });
-
         if (!mounted) {
-          console.log("❌ Component unmounted, aborting");
           return;
         }
 
         if (sessionError) {
           console.error("Session init error:", sessionError);
           // Ne töröljük automatikusan a session-t, hadd próbálja újra később
-          console.log("⏹️ Setting loading false due to session error");
           setLoading(false);
           return;
         }
 
         const currentUser = session?.user ?? null;
-        console.log("👤 Current user:", currentUser?.email || "None");
         setUser(currentUser);
 
         // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
         if (currentUser) {
-          console.log("🔍 Ensuring user profile...");
           const userProfile = await ensureUserProfile(currentUser);
-          console.log("📋 Profile result:", userProfile?.username || "Failed");
           if (mounted) {
             setProfile(userProfile);
           }
         } else {
-          console.log("❌ No user, clearing profile");
           setProfile(null);
         }
 
         if (mounted) {
-          console.log("✅ InitSession complete, setting loading false");
           setLoading(false);
         }
       } catch (error) {
         console.error("Session initialization error:", error);
         // Ne töröljük automatikusan a session-t, csak logoljuk a hibát
         if (mounted) {
-          console.log("⏹️ Setting loading false due to init error");
           setLoading(false);
         }
       }
@@ -178,24 +152,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("🔄 Auth state change:", event, {
-        hasSession: !!session,
-        userId: session?.user?.id,
-        userEmail: session?.user?.email,
-      });
-
       const currentUser = session?.user ?? null;
 
       // SIGNED_OUT event esetén azonnal töröljük az állapotot
       if (event === "SIGNED_OUT") {
-        console.log("👋 User signed out, clearing state");
         setUser(null);
         setProfile(null);
         setLoading(false);
         return;
       }
 
-      console.log("👤 Setting user:", currentUser?.email || "None");
       setUser(currentUser);
 
       // Ha van felhasználó és bejelentkezett
@@ -203,15 +169,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         currentUser &&
         (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
       ) {
-        console.log("✅ User signed in or token refreshed, ensuring profile");
-
         // Profil ellenőrzés async, de ne várjunk rá hogy befejezze
         ensureUserProfile(currentUser)
           .then((userProfile) => {
-            console.log(
-              "📋 Profile result:",
-              userProfile ? "Success" : "Failed"
-            );
             setProfile(userProfile);
           })
           .catch((error) => {
@@ -222,12 +182,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Azonnal befejezzük a loading-ot, nem várunk a profilra
         setProfile(null); // Ideiglenesen null
       } else if (!currentUser) {
-        console.log("❌ No user, clearing profile");
         setProfile(null);
       }
 
       // Azonnal befejezzük a loading-ot
-      console.log("⏹️ Auth state change complete, setting loading false");
       setLoading(false);
     });
 
@@ -239,10 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     try {
-      console.log("Initiating Google sign in...");
-
       const redirectUrl = getRedirectUrl();
-      console.log("Using redirect URL:", redirectUrl);
 
       // Force account selection and consent every time
       const { error } = await supabase.auth.signInWithOAuth({
@@ -272,10 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGitHub = async () => {
     try {
-      console.log("Initiating GitHub sign in...");
-
       const redirectUrl = getRedirectUrl();
-      console.log("Using redirect URL:", redirectUrl);
 
       // GitHub sign in
       const { error } = await supabase.auth.signInWithOAuth({
@@ -303,8 +255,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    console.log("Kijelentkezés kezdeményezése...");
-
     try {
       // Clear local state first
       setUser(null);
@@ -316,8 +266,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.error("Supabase kijelentkezési hiba:", error);
-      } else {
-        console.log("Sikeres kijelentkezés");
       }
 
       setLoading(false);

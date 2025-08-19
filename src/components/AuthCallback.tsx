@@ -8,10 +8,6 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log("🔄 AuthCallback started");
-        console.log("📍 Current URL:", window.location.href);
-        console.log("🔗 Hash fragment:", window.location.hash);
-
         // Hash fragment alapú token kezelés
         if (window.location.hash) {
           const hashParams = new URLSearchParams(
@@ -20,12 +16,9 @@ export default function AuthCallback() {
           const accessToken = hashParams.get("access_token");
           const refreshToken = hashParams.get("refresh_token");
 
-          console.log("🎫 Access token found:", !!accessToken);
-          console.log("🔄 Refresh token found:", !!refreshToken);
-
           if (accessToken) {
             // Supabase session beállítása a token-ekkel
-            const { data, error } = await supabase.auth.setSession({
+            const { error } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken || "",
             });
@@ -36,10 +29,6 @@ export default function AuthCallback() {
               return;
             }
 
-            console.log(
-              "✅ Session successfully set:",
-              data.session?.user?.email
-            );
             navigate("/", { replace: true });
             return;
           }
@@ -71,17 +60,11 @@ export default function AuthCallback() {
         }
 
         if (sessionData.session && sessionData.session.user) {
-          console.log(
-            "✅ Session found, user authenticated:",
-            sessionData.session.user.id
-          );
-
           // Wait for the auth context to update
           setTimeout(() => {
             navigate("/", { replace: true });
           }, 1000);
         } else {
-          console.log("❌ No session found in callback, redirecting to home");
           navigate("/", { replace: true });
         }
       } catch (error) {

@@ -45,15 +45,6 @@ export default function PlaceForm({
     place?.hasElevator !== undefined ? place.hasElevator : place?.has_elevator
   );
 
-  // Debug log a form inicializálásakor
-  console.log("🔧 PlaceForm DEBUG - place object:", place);
-  console.log("🔧 PlaceForm DEBUG - place.hasElevator:", place?.hasElevator);
-  console.log("🔧 PlaceForm DEBUG - place.has_elevator:", place?.has_elevator);
-  console.log(
-    "🔧 PlaceForm DEBUG - final hasElevator state:",
-    place?.hasElevator !== undefined ? place.hasElevator : place?.has_elevator
-  );
-
   return (
     <>
       {/* Background overlay */}
@@ -109,16 +100,6 @@ export default function PlaceForm({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            console.log("Form submitted with data:", {
-              title,
-              description,
-              rentPrice,
-              utilityCost,
-              commonCost,
-              floor,
-              hasElevator,
-              link,
-            });
 
             try {
               if (!title || title.trim() === "") {
@@ -152,7 +133,6 @@ export default function PlaceForm({
                 commonCost: commonCost || 0,
               };
 
-              console.log("Calling onSave with:", formData);
               onSave(formData);
             } catch (error) {
               console.error("Error in form submission:", error);

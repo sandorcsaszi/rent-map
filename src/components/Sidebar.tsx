@@ -207,7 +207,7 @@ function AddressAutocomplete({
             borderRadius: "0 0 8px 8px",
             maxHeight: "180px",
             overflowY: "auto",
-            zIndex: 1000,
+            zIndex: 1600,
             boxShadow: "0 4px 12px rgba(59, 130, 246, 0.15)",
           }}
         >
@@ -1335,9 +1335,7 @@ export default function Sidebar({
             onClick={async (e) => {
               e.stopPropagation();
               try {
-                console.log("Signing out...");
                 await signOut();
-                console.log("Sign out completed");
               } catch (error) {
                 console.error("Sign out error:", error);
               }
@@ -1438,7 +1436,7 @@ export default function Sidebar({
           background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
           borderLeft: `3px solid ${colors.primary}`,
           boxShadow: `-4px 0 20px ${colors.primary}15`,
-          zIndex: 1000,
+          zIndex: 1500,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
@@ -1450,7 +1448,7 @@ export default function Sidebar({
         <div
           style={{
             padding: "24px 20px 0px",
-            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
+            background: `linear-gradient(135deg, #ef4444 0%, #dc2626 100%)`,
             color: colors.white,
           }}
           className="px-5 pt-6 md:px-5 md:pt-6 sm:px-4 sm:pt-4 relative"
@@ -1478,10 +1476,12 @@ export default function Sidebar({
               fontSize: "24px",
               fontWeight: "700",
               margin: "0 0 16px 0",
+              textAlign: "center",
+              color: "#ffffff",
             }}
             className="text-xl md:text-2xl pr-0 md:pr-0 sm:pr-10"
           >
-            🗺️ Térkép Helyek
+            Menü
           </h2>
 
           {/* Tab Navigation */}

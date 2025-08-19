@@ -69,9 +69,7 @@ export default function MapWithPlaces() {
   }));
 
   const handleMapClick = (position: [number, number]) => {
-    console.log("Map clicked at position:", position);
     if (!user) {
-      console.log("User not authenticated, ignoring map click");
       return;
     }
 
@@ -79,7 +77,6 @@ export default function MapWithPlaces() {
       setAddingPosition(position);
       setSelectedPlace(null);
       setEditingPlace(null);
-      console.log("Adding position set:", position);
     } catch (error) {
       console.error("Error in handleMapClick:", error);
     }
@@ -97,7 +94,6 @@ export default function MapWithPlaces() {
   };
 
   const handleSavePlace = async (placeData: any) => {
-    console.log("Saving place with data:", placeData);
     if (!user || !addingPosition) {
       console.error("Missing user or position for saving place");
       return;
@@ -120,19 +116,7 @@ export default function MapWithPlaces() {
           placeData.hasElevator !== undefined ? placeData.hasElevator : null,
       };
 
-      console.log("🔧 DEBUG NEW PLACE - Original placeData:", placeData);
-      console.log(
-        "🔧 DEBUG NEW PLACE - hasElevator value:",
-        placeData.hasElevator
-      );
-      console.log(
-        "🔧 DEBUG NEW PLACE - typeof hasElevator:",
-        typeof placeData.hasElevator
-      );
-      console.log("🔧 DEBUG NEW PLACE - Final newPlace object:", newPlace);
-      console.log("Creating place:", newPlace);
       await createPlace(newPlace);
-      console.log("Place created successfully");
       setAddingPosition(null);
     } catch (error) {
       console.error("Hiba a hely mentésekor:", error);
@@ -161,14 +145,6 @@ export default function MapWithPlaces() {
             : null,
       };
 
-      console.log("🔧 DEBUG - Original updatedData:", updatedData);
-      console.log("🔧 DEBUG - hasElevator value:", updatedData.hasElevator);
-      console.log(
-        "🔧 DEBUG - typeof hasElevator:",
-        typeof updatedData.hasElevator
-      );
-      console.log("🔧 DEBUG - Final updates object:", updates);
-      console.log("Sending updates to database:", updates);
       await updatePlace(editingPlace.id, updates);
       setEditingPlace(null);
     } catch (error) {
@@ -386,7 +362,6 @@ export default function MapWithPlaces() {
           {user && sidebarCollapsed && (
             <button
               onClick={() => {
-                console.log("Burger menu clicked! Opening sidebar...");
                 setSidebarCollapsed(false);
               }}
               style={{

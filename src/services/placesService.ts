@@ -20,9 +20,6 @@ export class PlacesService {
 
   // Új hely létrehozása (mindig privát)
   static async createPlace(place: Omit<Place, 'id' | 'created_at' | 'updated_at'>): Promise<Place> {
-    console.log('PlacesService.createPlace called with:', place);
-    console.log('User ID type:', typeof place.user_id, 'Value:', place.user_id);
-    
     const { data, error } = await supabase
       .from('places')
       .insert([place])
@@ -34,7 +31,6 @@ export class PlacesService {
       throw error
     }
 
-    console.log('Place created in database:', data);
     return data
   }
 
@@ -146,15 +142,10 @@ export function usePlaces() {
     if (!user) throw new Error('Bejelentkezés szükséges')
 
     try {
-      console.log('Creating place with user ID:', user.id);
-      console.log('Place data:', placeData);
-      
       const newPlace = await PlacesService.createPlace({
         ...placeData,
         user_id: user.id
       })
-      
-      console.log('Place created successfully:', newPlace);
       
       // Helyi state frissítése - minden hely privát
       setUserPlaces(prev => [newPlace, ...prev])
