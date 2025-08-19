@@ -18,10 +18,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Típusok az adatbázis táblákhoz
 export interface Profile {
-  id: string
-  username?: string
-  full_name?: string
-  avatar_url?: string
-  updated_at?: string
-  created_at: string
+  id: string;
+  email: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  created_at: string;
+  updated_at: string;
 }

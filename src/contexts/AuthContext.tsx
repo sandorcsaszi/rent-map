@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 
 interface AuthContextType {
   user: User | null;
-  session: any | null;
+  profile: any | null;
   loading: boolean;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signInWithGitHub: () => Promise<{ error: AuthError | null }>;
@@ -15,77 +15,102 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<any | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Profil létrehozása, ha nem létezik
+  const ensureUserProfile = async (user: User) => {
+    try {
+      console.log('Profil ellenőrzése felhasználónak:', user.id);
+      
+      // Ellenőrizzük, hogy létezik-e már a profil
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (existingProfile && !fetchError) {
+        console.log('Profil már létezik:', existingProfile);
+        return existingProfile;
+      }
+
+      // Ha nem létezik, létrehozzuk
+      console.log('Új profil létrehozása:', user.id);
+      
+      const newProfile = {
+        id: user.id,
+        email: user.email || '',
+        full_name: user.user_metadata?.full_name || 
+                   user.user_metadata?.name || 
+                   user.email?.split('@')[0] || 
+                   'Névtelen felhasználó',
+        avatar_url: user.user_metadata?.avatar_url || 
+                    user.user_metadata?.picture || 
+                    null,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data: createdProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert([newProfile])
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Profil létrehozási hiba:', createError);
+        return null;
+      }
+
+      console.log('Profil sikeresen létrehozva:', createdProfile);
+      return createdProfile;
+
+    } catch (error) {
+      console.error('Profil kezelési hiba:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     // Jelenlegi session lekérése
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      
       // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
-      if (session?.user) {
-        ensureUserProfile(session.user);
+      if (currentUser) {
+        ensureUserProfile(currentUser).then(userProfile => {
+          setProfile(userProfile);
+          setLoading(false);
+        });
+      } else {
+        setProfile(null);
+        setLoading(false);
       }
-
-      setLoading(false);
     });
 
     // Auth változások figyelése
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change:', event, session?.user?.id);
+      
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
 
       // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
-      if (session?.user) {
-        await ensureUserProfile(session.user);
+      if (currentUser && event === 'SIGNED_IN') {
+        const userProfile = await ensureUserProfile(currentUser);
+        setProfile(userProfile);
+      } else {
+        setProfile(null);
       }
-
+      
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // Profil létrehozása, ha nem létezik
-  const ensureUserProfile = async (user: User) => {
-    try {
-      // Ellenőrizzük, hogy létezik-e már a profil
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("id", user.id)
-        .single();
-
-      // Ha nem létezik, létrehozzuk
-      if (!existingProfile) {
-        const { error } = await supabase.from("profiles").insert([
-          {
-            id: user.id,
-            email: user.email,
-            full_name:
-              user.user_metadata?.full_name ||
-              user.user_metadata?.name ||
-              user.email?.split("@")[0],
-            avatar_url:
-              user.user_metadata?.avatar_url || user.user_metadata?.picture,
-            updated_at: new Date().toISOString(),
-          },
-        ]);
-
-        if (error) {
-          console.error("Hiba a profil létrehozásakor:", error);
-        } else {
-          console.log("Profil sikeresen létrehozva:", user.id);
-        }
-      }
-    } catch (error) {
-      console.error("Hiba a profil ellenőrzésekor:", error);
-    }
-  };
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -114,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     user,
-    session,
+    profile,
     loading,
     signInWithGoogle,
     signInWithGitHub,
