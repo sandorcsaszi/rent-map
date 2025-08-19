@@ -12,6 +12,15 @@ export default function MapWithPlaces() {
   const { user, loading: authLoading } = useAuth();
   const { places, createPlace, updatePlace, deletePlace } = usePlaces();
 
+  // Debug log hozzáadása
+  console.log("🗺️ MapWithPlaces render:", {
+    hasUser: !!user,
+    authLoading,
+    userEmail: user?.email,
+    userId: user?.id,
+    placesCount: places.length,
+  });
+
   const [addingPosition, setAddingPosition] = useState<[number, number] | null>(
     null
   );
@@ -240,6 +249,7 @@ export default function MapWithPlaces() {
 
   // Loading állapot
   if (authLoading) {
+    console.log("⏳ Still loading auth, showing loading screen");
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="text-center">
@@ -248,6 +258,16 @@ export default function MapWithPlaces() {
         </div>
       </div>
     );
+  }
+
+  // Ha nincs user, de nem loading sem
+  if (!user && !authLoading) {
+    console.log("❌ No user and not loading - should show login modal");
+  }
+
+  // Ha van user és nincs loading
+  if (user && !authLoading) {
+    console.log("✅ User found and not loading - should show app");
   }
 
   return (

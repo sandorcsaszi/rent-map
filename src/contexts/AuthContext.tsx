@@ -178,19 +178,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event, session?.user?.id);
+      console.log("🔄 Auth state change:", event, {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        userEmail: session?.user?.email
+      });
 
       const currentUser = session?.user ?? null;
 
       // SIGNED_OUT event esetén azonnal töröljük az állapotot
       if (event === "SIGNED_OUT") {
-        console.log("User signed out, clearing state");
+        console.log("👋 User signed out, clearing state");
         setUser(null);
         setProfile(null);
         setLoading(false);
         return;
       }
 
+      console.log("👤 Setting user:", currentUser?.email || "None");
       setUser(currentUser);
 
       // Ha van felhasználó és bejelentkezett
@@ -198,15 +203,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         currentUser &&
         (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
       ) {
-        console.log("User signed in or token refreshed, ensuring profile");
+        console.log("✅ User signed in or token refreshed, ensuring profile");
         const userProfile = await ensureUserProfile(currentUser);
+        console.log("📋 Profile result:", userProfile ? "Success" : "Failed");
         setProfile(userProfile);
       } else if (!currentUser) {
-        console.log("No user, clearing profile");
+        console.log("❌ No user, clearing profile");
         setProfile(null);
       }
 
       // Itt kell lennie a setLoading(false)-nak!
+      console.log("⏹️ Auth state change complete, setting loading false");
       setLoading(false);
     });
 
@@ -329,5 +336,14 @@ export function useAuth() {
   if (context === undefined) {
     throw new Error("useAuth csak AuthProvider-en belül használható");
   }
+  
+  // Debug log minden useAuth hívásnál
+  console.log("🔑 useAuth called:", {
+    hasUser: !!context.user,
+    userEmail: context.user?.email,
+    loading: context.loading,
+    hasProfile: !!context.profile
+  });
+  
   return context;
 }

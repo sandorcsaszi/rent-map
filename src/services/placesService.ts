@@ -106,23 +106,39 @@ export function usePlaces() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Debug log hozzáadása
+  console.log("🏠 usePlaces hook render:", { 
+    hasUser: !!user, 
+    userId: user?.id,
+    placesCount: userPlaces.length,
+    loading,
+    error
+  });
+
   // Felhasználó helyeinek betöltése
   useEffect(() => {
+    console.log("🔄 usePlaces useEffect triggered, user:", user?.email);
+    
     const loadUserPlaces = async () => {
       if (!user) {
+        console.log("❌ No user, clearing places and stopping loading");
         setUserPlaces([])
         setLoading(false)
         return
       }
 
       try {
+        console.log("📡 Loading user places for:", user.id);
         setLoading(true)
         const places = await PlacesService.getUserPlaces(user.id)
+        console.log("✅ User places loaded:", places.length, "places");
         setUserPlaces(places)
       } catch (err) {
+        console.error("❌ Error loading user places:", err);
         setError(err instanceof Error ? err.message : 'Hiba történt a helyek betöltésekor')
         console.error('Hiba a felhasználó helyeinek betöltésekor:', err)
       } finally {
+        console.log("⏹️ usePlaces loading finished");
         setLoading(false)
       }
     }
@@ -132,10 +148,12 @@ export function usePlaces() {
     // Real-time subscription csak ha van bejelentkezett felhasználó
     let subscription: any = null
     if (user) {
+      console.log("🔔 Setting up real-time subscription for user:", user.id);
       subscription = PlacesService.subscribeToUserPlaces(user.id, setUserPlaces)
     }
 
     return () => {
+      console.log("🧹 Cleaning up usePlaces effect");
       if (subscription) {
         subscription.unsubscribe()
       }
