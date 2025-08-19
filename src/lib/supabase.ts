@@ -14,6 +14,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    flowType: 'pkce', // Authorization Code Flow with PKCE
     // Standard localStorage használata
     storage: window.localStorage,
     // Debug mód kikapcsolása production-ben
@@ -36,3 +37,5 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
+
+export type { User, Session } from '@supabase/supabase-js'
