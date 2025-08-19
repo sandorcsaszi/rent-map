@@ -11,7 +11,6 @@ export interface Place {
   rent_price?: number;
   utility_cost?: number;
   common_cost?: number;
-  room_count?: number;
   floor?: number;
   has_elevator?: boolean;
   link?: string;
@@ -36,9 +35,7 @@ export interface PlaceFormData {
   rent_price?: number;
   deposit_price?: number;
   utilities_price?: number;
-  room_count?: number;
   is_public: boolean;
-  // Kompatibilitás
   title?: string;
   price?: string;
   link?: string;
