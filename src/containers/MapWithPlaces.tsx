@@ -27,17 +27,13 @@ export default function MapWithPlaces() {
     onConfirm: () => void;
   } | null>(null);
 
-  // Handle user authentication changes
+  // Handle user authentication changes - csak egyszer inicializálás
   useEffect(() => {
-    if (!authLoading) {
-      // Ha bejelentkezik a user, nyissuk ki a sidebar-t
-      if (user) {
-        setSidebarCollapsed(false);
-      } else {
-        setSidebarCollapsed(true);
-      }
+    if (!authLoading && user) {
+      // Csak bejelentkezéskor nyissuk ki egyszer, utána ne nyúljunk hozzá
+      setSidebarCollapsed(false);
     }
-  }, [user, authLoading]);
+  }, [authLoading]); // Csak authLoading változásra reagálunk, user-re nem!
 
   // Handle window resize
   useEffect(() => {

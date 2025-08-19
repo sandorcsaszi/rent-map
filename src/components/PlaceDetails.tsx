@@ -106,73 +106,70 @@ export default function PlaceDetails({
           {place.title}
         </h2>
 
-        {/* Részletes költségek megjelenítése */}
-        {(place.rentPrice || place.utilityCost || place.commonCost) && (
+        {/* Részletes költségek megjelenítése - mindig megjelenítjük */}
+        <div
+          style={{
+            marginBottom: "12px",
+            padding: "12px",
+            backgroundColor: colors.background,
+            borderRadius: "8px",
+            border: `1px solid ${colors.lightGray}`,
+          }}
+        >
           <div
             style={{
-              marginBottom: "12px",
-              padding: "12px",
-              backgroundColor: colors.background,
-              borderRadius: "8px",
-              border: `1px solid ${colors.lightGray}`,
+              fontSize: "14px",
+              fontWeight: "600",
+              color: colors.secondary,
+              marginBottom: "8px",
             }}
           >
-            <div
-              style={{
-                fontSize: "14px",
-                fontWeight: "600",
-                color: colors.secondary,
-                marginBottom: "8px",
-              }}
-            >
-              📊 Költségek részletesen:
+            📊 Költségek részletesen:
+          </div>
+          <div style={{ fontSize: "13px", color: colors.gray }}>
+            <div style={{ marginBottom: "2px" }}>
+              🏠 Bérleti díj:{" "}
+              <strong>
+                {place.rentPrice ? (place.rentPrice / 1000).toFixed(1) : "0"}{" "}
+                ezer Ft/hó
+              </strong>
             </div>
-            <div style={{ fontSize: "13px", color: colors.gray }}>
-              {place.rentPrice && (
-                <div style={{ marginBottom: "2px" }}>
-                  🏠 Bérleti díj:{" "}
-                  <strong>
-                    {(place.rentPrice / 1000).toFixed(1)} ezer Ft/hó
-                  </strong>
-                </div>
-              )}
-              {place.utilityCost && (
-                <div style={{ marginBottom: "2px" }}>
-                  ⚡ Rezsi:{" "}
-                  <strong>
-                    {(place.utilityCost / 1000).toFixed(0)} ezer Ft/hó
-                  </strong>
-                </div>
-              )}
-              {place.commonCost && (
-                <div style={{ marginBottom: "2px" }}>
-                  🏢 Közös költség:{" "}
-                  <strong>
-                    {(place.commonCost / 1000).toFixed(0)} ezer Ft/hó
-                  </strong>
-                </div>
-              )}
-              <hr
-                style={{
-                  margin: "6px 0",
-                  border: `1px solid ${colors.lightGray}`,
-                }}
-              />
-              <div style={{ fontWeight: "600", color: colors.secondary }}>
-                💰 Összesen:{" "}
-                <strong>
-                  {(
-                    ((place.rentPrice || 0) +
-                      (place.utilityCost || 0) +
-                      (place.commonCost || 0)) /
-                    1000
-                  ).toFixed(0)}{" "}
-                  ezer Ft/hó
-                </strong>
-              </div>
+            <div style={{ marginBottom: "2px" }}>
+              ⚡ Rezsi:{" "}
+              <strong>
+                {place.utilityCost
+                  ? (place.utilityCost / 1000).toFixed(0)
+                  : "0"}{" "}
+                ezer Ft/hó
+              </strong>
+            </div>
+            <div style={{ marginBottom: "2px" }}>
+              🏢 Közös költség:{" "}
+              <strong>
+                {place.commonCost ? (place.commonCost / 1000).toFixed(0) : "0"}{" "}
+                ezer Ft/hó
+              </strong>
+            </div>
+            <hr
+              style={{
+                margin: "6px 0",
+                border: `1px solid ${colors.lightGray}`,
+              }}
+            />
+            <div style={{ fontWeight: "600", color: colors.secondary }}>
+              💰 Összesen:{" "}
+              <strong>
+                {(
+                  ((place.rentPrice || 0) +
+                    (place.utilityCost || 0) +
+                    (place.commonCost || 0)) /
+                  1000
+                ).toFixed(0)}{" "}
+                ezer Ft/hó
+              </strong>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Ingatlan részletek */}
         {(place.floor !== undefined || place.hasElevator !== undefined) && (

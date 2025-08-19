@@ -1136,29 +1136,24 @@ function PlacesList({
                 >
                   {place.title}
                 </h4>
-                {/* Teljes költség megjelenítése */}
-                {(place.rentPrice || 0) +
-                  (place.utilityCost || 0) +
-                  (place.commonCost || 0) >
-                  0 && (
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: "600",
-                      color: colors.success,
-                      margin: "0",
-                    }}
-                  >
-                    💰{" "}
-                    {(
-                      ((place.rentPrice || 0) +
-                        (place.utilityCost || 0) +
-                        (place.commonCost || 0)) /
-                      1000
-                    ).toFixed(0)}{" "}
-                    ezer Ft/hó
-                  </p>
-                )}
+                {/* Teljes költség megjelenítése - mindig megjelenítjük */}
+                <p
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    color: colors.success,
+                    margin: "0",
+                  }}
+                >
+                  💰{" "}
+                  {(
+                    ((place.rentPrice || 0) +
+                      (place.utilityCost || 0) +
+                      (place.commonCost || 0)) /
+                    1000
+                  ).toFixed(0)}{" "}
+                  ezer Ft/hó
+                </p>
               </div>
               <button
                 onClick={(e) => {
