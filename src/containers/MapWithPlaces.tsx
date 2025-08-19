@@ -19,10 +19,7 @@ export default function MapWithPlaces() {
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllPopups, setShowAllPopups] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    // Ha nincs user, akkor becsukott; ha van user, akkor nyitott
-    return !user;
-  });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Alapértelmezetten becsukott
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmDialogData, setConfirmDialogData] = useState<{
     title: string;
@@ -32,13 +29,15 @@ export default function MapWithPlaces() {
 
   // Handle user authentication changes
   useEffect(() => {
-    // Ha bejelentkezik a user, nyissuk ki a sidebar-t
-    if (user) {
-      setSidebarCollapsed(false);
-    } else {
-      setSidebarCollapsed(true);
+    if (!authLoading) {
+      // Ha bejelentkezik a user, nyissuk ki a sidebar-t
+      if (user) {
+        setSidebarCollapsed(false);
+      } else {
+        setSidebarCollapsed(true);
+      }
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   // Handle window resize
   useEffect(() => {
@@ -357,38 +356,20 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative transition-all duration-300">
-          {/* DEBUG: Mindig megjelenítjük az állapotot */}
-          <div
-            style={{
-              position: "fixed",
-              top: "10px",
-              right: "10px",
-              background: "rgba(0,0,0,0.7)",
-              color: "white",
-              padding: "8px",
-              borderRadius: "4px",
-              fontSize: "12px",
-              zIndex: 9999,
+          {/* TESZT: Mindig megjelenítjük a burger menu-t */}
+          <button
+            onClick={() => {
+              console.log("Burger menu clicked! User:", !!user, "Collapsed:", sidebarCollapsed);
+              setSidebarCollapsed(false);
             }}
+            className="fixed top-4 right-4 z-[1001] w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
+            style={{
+              borderRadius: "4px", // Szögletes sarkok
+              boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
+              border: "2px solid rgba(255, 255, 255, 0.2)",
+            }}
+            title="Oldalsáv megnyitása"
           >
-            User: {user ? "✓" : "✗"} | Collapsed: {sidebarCollapsed ? "✓" : "✗"}
-          </div>
-
-          {/* Burger Menu Button - csak bejelentkezés után és ha sidebar becsukva */}
-          {user && sidebarCollapsed && (
-            <button
-              onClick={() => {
-                console.log("Burger menu clicked!");
-                setSidebarCollapsed(false);
-              }}
-              className="fixed top-4 right-4 z-[1001] w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
-              style={{
-                borderRadius: "4px", // Szögletes sarkok
-                boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
-                border: "2px solid rgba(255, 255, 255, 0.2)",
-              }}
-              title="Oldalsáv megnyitása"
-            >
               {/* Hamburger icon */}
               <div className="flex flex-col items-center justify-center space-y-1">
                 <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
@@ -396,7 +377,6 @@ export default function MapWithPlaces() {
                 <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
               </div>
             </button>
-          )}
 
           <MapComponent
             places={filteredPlaces}
