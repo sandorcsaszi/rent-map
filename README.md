@@ -26,24 +26,53 @@ Mivel programozó vagyok, úgy döntöttem, inkább készítek egy saját megold
 npm install
 ```
 
-### 2. BKK API beállítása (kötelező)
-Hozz létre egy `.env` fájlt a projekt gyökerében:
-```env
-# BKK Futár API kulcs (kötelező)
-# Szerezd be innen: https://opendata.bkk.hu/
-VITE_BKK_API_KEY=your_api_key_here
+### 2. Környezeti változók beállítása
+Másold le a `.env.example` fájlt `.env` néven:
+```bash
+cp .env.example .env
 ```
 
-**Hogyan szerezz BKK API kulcsot:**
+Vagy Windowson:
+```bash
+copy .env.example .env
+```
+
+Majd töltsd ki a `.env` fájlban a szükséges adatokat:
+
+```env
+# BKK Futár API kulcs (kötelező)
+VITE_BKK_API_KEY=your_bkk_api_key
+
+# Supabase konfiguráció (kötelező)
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+# Auth callback URLs
+VITE_LOCAL_CALLBACK_URL=http://localhost:5173/auth/callback
+VITE_PRODUCTION_CALLBACK_URL=https://your-app-name.vercel.app/auth/callback
+```
+
+**API kulcsok beszerzése:**
+
+**BKK API kulcs:**
 1. Menj a https://opendata.bkk.hu/ oldalra
 2. Regisztrálj egy fiókot
 3. Kérj API kulcsot a BKK Futár API-hoz
-4. Másold be a kulcsot a `.env` fájlba
+
+**Supabase beállítás:**
+1. Hozz létre egy projektet a https://supabase.com/ oldalon
+2. Project Settings → API részben találod az URL-t és API kulcsot
+3. Kövesd a részletes beállítási útmutatót: [SUPABASE_SETUP.md](SUPABASE_SETUP.md)
 
 ### 3. Fejlesztői szerver indítása
 ```bash
 npm run dev
 ```
+
+### 4. Production deploy (Vercel)
+1. Frissítsd a `.env` fájlban a `VITE_PRODUCTION_CALLBACK_URL`-t a Vercel domain-eddel
+2. Vercel Dashboard → Project Settings → Environment Variables-ben add meg a környezeti változókat
+3. Supabase Dashboard → Authentication → URL Configuration-ben add hozzá a production callback URL-t
 
 Aztán nyisd meg a böngészőt a `http://localhost:5173` címen, és már használhatod is! 🎉
 
