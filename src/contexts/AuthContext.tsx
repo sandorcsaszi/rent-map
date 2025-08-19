@@ -189,12 +189,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("Initiating Google sign in...");
 
-      // Clear any existing session first to allow account switching
-      await supabase.auth.signOut({ scope: "local" });
-
-      // Small delay to ensure cleanup
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
       // Force account selection and consent every time
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -228,12 +222,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGitHub = async () => {
     try {
       console.log("Initiating GitHub sign in...");
-
-      // Clear any existing session first to allow account switching
-      await supabase.auth.signOut({ scope: "local" });
-
-      // Small delay to ensure cleanup
-      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // GitHub sign in with fresh state
       const { error } = await supabase.auth.signInWithOAuth({

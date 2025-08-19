@@ -9,23 +9,46 @@ export default function AuthCallback() {
     const handleAuthCallback = async () => {
       try {
         console.log("Processing auth callback...");
-
-        // Exchange the code for a session
-        const { data, error } = await supabase.auth.getUser();
-
-        if (error) {
-          console.error("Auth callback hiba:", error);
+        console.log("Current URL:", window.location.href);
+        
+        // First, try to get the session from the URL hash/query
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session error:", sessionError);
           navigate("/", { replace: true });
           return;
         }
 
-        if (data.user) {
-          console.log("User authenticated successfully:", data.user.id);
-          // Redirect to home page
-          navigate("/", { replace: true });
+        if (sessionData.session && sessionData.session.user) {
+          console.log("Session found, user authenticated:", sessionData.session.user.id);
+          console.log("Access token:", sessionData.session.access_token ? "Present" : "Missing");
+          
+          // Wait a bit longer for the auth context to update
+          setTimeout(() => {
+            navigate("/", { replace: true });
+          }, 1500);
         } else {
-          console.log("No user found after callback");
-          navigate("/", { replace: true });
+          console.log("No session found in callback, checking for user directly...");
+          
+          // Fallback: try to get user directly
+          const { data: userData, error: userError } = await supabase.auth.getUser();
+          
+          if (userError) {
+            console.error("User fetch error:", userError);
+            navigate("/", { replace: true });
+            return;
+          }
+          
+          if (userData.user) {
+            console.log("User found directly:", userData.user.id);
+            setTimeout(() => {
+              navigate("/", { replace: true });
+            }, 1500);
+          } else {
+            console.log("No user found, redirecting to home");
+            navigate("/", { replace: true });
+          }
         }
       } catch (error) {
         console.error("Hiba az auth callback során:", error);
@@ -33,8 +56,8 @@ export default function AuthCallback() {
       }
     };
 
-    // Small delay to ensure URL parameters are processed
-    const timer = setTimeout(handleAuthCallback, 500);
+    // Longer delay to ensure all auth processing is complete
+    const timer = setTimeout(handleAuthCallback, 1000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
