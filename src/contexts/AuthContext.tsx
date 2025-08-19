@@ -204,15 +204,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
       ) {
         console.log("✅ User signed in or token refreshed, ensuring profile");
-        const userProfile = await ensureUserProfile(currentUser);
-        console.log("📋 Profile result:", userProfile ? "Success" : "Failed");
-        setProfile(userProfile);
+
+        // Profil ellenőrzés async, de ne várjunk rá hogy befejezze
+        ensureUserProfile(currentUser)
+          .then((userProfile) => {
+            console.log(
+              "📋 Profile result:",
+              userProfile ? "Success" : "Failed"
+            );
+            setProfile(userProfile);
+          })
+          .catch((error) => {
+            console.error("❌ Profile error:", error);
+            setProfile(null);
+          });
+
+        // Azonnal befejezzük a loading-ot, nem várunk a profilra
+        setProfile(null); // Ideiglenesen null
       } else if (!currentUser) {
         console.log("❌ No user, clearing profile");
         setProfile(null);
       }
 
-      // Itt kell lennie a setLoading(false)-nak!
+      // Azonnal befejezzük a loading-ot
       console.log("⏹️ Auth state change complete, setting loading false");
       setLoading(false);
     });
