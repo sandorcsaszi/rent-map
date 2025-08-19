@@ -186,6 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null);
       }
 
+      // Itt kell lennie a setLoading(false)-nak!
       setLoading(false);
     });
 
