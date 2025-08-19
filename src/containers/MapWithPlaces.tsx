@@ -23,6 +23,12 @@ export default function MapWithPlaces() {
     // Ha nincs user, akkor becsukott; ha van user, akkor nyitott
     return !user;
   });
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmDialogData, setConfirmDialogData] = useState<{
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  } | null>(null);
 
   // Handle user authentication changes
   useEffect(() => {
@@ -150,15 +156,25 @@ export default function MapWithPlaces() {
   };
 
   const handleDeletePlace = async (placeId: string) => {
-    if (!confirm("Biztosan törölni szeretnéd ezt a helyet?")) return;
-
-    try {
-      await deletePlace(placeId);
-      setSelectedPlace(null);
-    } catch (error) {
-      console.error("Hiba a hely törlésekor:", error);
-      alert("Hiba történt a hely törlésekor!");
-    }
+    setConfirmDialogData({
+      title: "Hely törlése",
+      message:
+        "Biztosan törölni szeretnéd ezt a helyet? Ez a művelet nem vonható vissza.",
+      onConfirm: async () => {
+        try {
+          await deletePlace(placeId);
+          setSelectedPlace(null);
+          setShowConfirmDialog(false);
+          setConfirmDialogData(null);
+        } catch (error) {
+          console.error("Hiba a hely törlésekor:", error);
+          alert("Hiba történt a hely törlésekor!");
+          setShowConfirmDialog(false);
+          setConfirmDialogData(null);
+        }
+      },
+    });
+    setShowConfirmDialog(true);
   };
 
   const handleEditPlace = (place: Place) => {
@@ -225,14 +241,25 @@ export default function MapWithPlaces() {
   const handleDeletePlaceFromSidebar = async (id: string | number) => {
     if (!user) return;
 
-    try {
-      // Convert to string if needed
-      const placeId = typeof id === "string" ? id : id.toString();
-      await deletePlace(placeId);
-    } catch (error) {
-      console.error("Hiba a hely törlésekor:", error);
-      alert("Hiba történt a hely törlésekor!");
-    }
+    const placeId = typeof id === "string" ? id : id.toString();
+    setConfirmDialogData({
+      title: "Hely törlése",
+      message:
+        "Biztosan törölni szeretnéd ezt a helyet? Ez a művelet nem vonható vissza.",
+      onConfirm: async () => {
+        try {
+          await deletePlace(placeId);
+          setShowConfirmDialog(false);
+          setConfirmDialogData(null);
+        } catch (error) {
+          console.error("Hiba a hely törlésekor:", error);
+          alert("Hiba történt a hely törlésekor!");
+          setShowConfirmDialog(false);
+          setConfirmDialogData(null);
+        }
+      },
+    });
+    setShowConfirmDialog(true);
   };
 
   // Szűrt helyek számítása
@@ -330,11 +357,34 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative transition-all duration-300">
+          {/* DEBUG: Ha nincs burger menu, megjelenítjük az állapotot */}
+          {(!user || !sidebarCollapsed) && (
+            <div
+              style={{
+                position: "fixed",
+                top: "10px",
+                right: "10px",
+                background: "rgba(0,0,0,0.7)",
+                color: "white",
+                padding: "8px",
+                borderRadius: "4px",
+                fontSize: "12px",
+                zIndex: 9999,
+              }}
+            >
+              User: {user ? "✓" : "✗"} | Collapsed:{" "}
+              {sidebarCollapsed ? "✓" : "✗"}
+            </div>
+          )}
+
           {/* Burger Menu Button - csak bejelentkezés után és ha sidebar becsukva */}
           {user && sidebarCollapsed && (
             <button
-              onClick={() => setSidebarCollapsed(false)}
-              className="fixed top-4 right-4 z-50 w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
+              onClick={() => {
+                console.log("Burger menu clicked!");
+                setSidebarCollapsed(false);
+              }}
+              className="fixed top-4 right-4 z-[1001] w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
               style={{
                 borderRadius: "4px", // Szögletes sarkok
                 boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
@@ -398,6 +448,117 @@ export default function MapWithPlaces() {
               : () => {}
           }
         />
+      )}
+
+      {/* Modern Confirm Dialog */}
+      {showConfirmDialog && confirmDialogData && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 2000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            animation: "fadeIn 0.3s ease-out",
+          }}
+          onClick={() => {
+            setShowConfirmDialog(false);
+            setConfirmDialogData(null);
+          }}
+        >
+          <div
+            style={{
+              background:
+                "linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #ffffff 100%)",
+              borderRadius: "16px",
+              padding: "32px",
+              maxWidth: "400px",
+              width: "calc(100vw - 40px)",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.8)",
+              position: "relative",
+              zIndex: 2001,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3
+              style={{
+                fontSize: "20px",
+                fontWeight: "600",
+                marginBottom: "16px",
+                color: "#dc2626",
+                textAlign: "center",
+              }}
+            >
+              🗑️ {confirmDialogData.title}
+            </h3>
+
+            <p
+              style={{
+                fontSize: "16px",
+                color: "#6b7280",
+                marginBottom: "24px",
+                textAlign: "center",
+                lineHeight: "1.5",
+              }}
+            >
+              {confirmDialogData.message}
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                justifyContent: "center",
+              }}
+            >
+              <button
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  setConfirmDialogData(null);
+                }}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)",
+                  color: "#6b7280",
+                  padding: "12px 24px",
+                  borderRadius: "12px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+              >
+                ❌ Mégse
+              </button>
+
+              <button
+                onClick={confirmDialogData.onConfirm}
+                style={{
+                  background:
+                    "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                  color: "#ffffff",
+                  padding: "12px 24px",
+                  borderRadius: "12px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
+                }}
+              >
+                🗑️ Törlés
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Footer komponens - mindig bal alul, bejelentkezés után is */}
