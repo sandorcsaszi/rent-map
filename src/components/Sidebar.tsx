@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { FaSignOutAlt, FaUser } from "react-icons/fa";
+import { useAuth } from "../contexts/AuthContext";
 import type { Place, PlaceFormData, FilterCriteria } from "../types/Place";
 import {
   geocodeAddress,
@@ -1467,6 +1469,123 @@ export default function Sidebar({
   onFiltersChange,
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<"search" | "add">("search");
+  const { user, signOut } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // ProfileBar komponens
+  const ProfileBar = () => {
+    if (!user) return null;
+
+    return (
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+          borderTop: "1px solid rgba(59, 130, 246, 0.2)",
+          padding: "12px 16px",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            cursor: "pointer",
+            borderRadius: "12px",
+            padding: "8px",
+            transition: "all 0.2s",
+            background: showProfileMenu ? "rgba(59, 130, 246, 0.1)" : "transparent",
+          }}
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
+        >
+          {/* Avatar */}
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              background: user.user_metadata?.avatar_url 
+                ? `url(${user.user_metadata.avatar_url})` 
+                : "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              border: "2px solid rgba(59, 130, 246, 0.3)",
+            }}
+          >
+            {!user.user_metadata?.avatar_url && (
+              <FaUser style={{ color: "white", fontSize: "16px" }} />
+            )}
+          </div>
+
+          {/* User info */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: "#1f2937",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {user.user_metadata?.full_name || user.email || "Felhasználó"}
+            </div>
+            <div
+              style={{
+                fontSize: "12px",
+                color: "#6b7280",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {user.email}
+            </div>
+          </div>
+
+          {/* Logout button vagy dropdown arrow */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              signOut();
+            }}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#6b7280",
+              cursor: "pointer",
+              padding: "8px",
+              borderRadius: "8px",
+              transition: "all 0.2s",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+              e.currentTarget.style.color = "#ef4444";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "none";
+              e.currentTarget.style.color = "#6b7280";
+            }}
+            title="Kijelentkezés"
+          >
+            <FaSignOutAlt style={{ fontSize: "16px" }} />
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // Apply filters to places
   const applyFilters = (placesToFilter: Place[]): Place[] => {
@@ -1619,6 +1738,7 @@ export default function Sidebar({
           flex: "1",
           overflowY: "auto",
           padding: "20px",
+          paddingBottom: user ? "80px" : "20px", // Extra padding ha van bejelentkezett user
           overflowX: "hidden",
           backgroundColor: colors.white,
         }}
@@ -1641,6 +1761,9 @@ export default function Sidebar({
 
         {activeTab === "add" && <SidebarAddForm onAddByAddress={onAddPlace} />}
       </div>
+
+      {/* Profile Bar */}
+      <ProfileBar />
     </div>
   );
 }
