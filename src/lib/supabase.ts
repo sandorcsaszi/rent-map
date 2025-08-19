@@ -1,0 +1,27 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Supabase URL és ANON KEY szükséges! Ellenőrizd a .env fájlt.'
+  )
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+  },
+})
+
+// Típusok az adatbázis táblákhoz
+export interface Profile {
+  id: string
+  username?: string
+  full_name?: string
+  avatar_url?: string
+  updated_at?: string
+  created_at: string
+}

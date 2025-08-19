@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Login modal specific styles */
+@layer base {
+  /* Ensure proper background colors */
+  button {
+    background-color: initial;
+  }
+  
+  /* Fix any transparency issues */
+  .bg-white {
+    background-color: rgb(255, 255, 255) !important;
+  }
+  
+  .bg-gray-900 {
+    background-color: rgb(17, 24, 39) !important;
+  }
+  
+  .bg-gray-50 {
+    background-color: rgb(249, 250, 251) !important;
+  }
+  
+  /* Ensure text is visible */
+  .text-gray-700 {
+    color: rgb(55, 65, 81) !important;
+  }
+  
+  .text-white {
+    color: rgb(255, 255, 255) !important;
+  }
+  
+  .text-gray-900 {
+    color: rgb(17, 24, 39) !important;
+  }
+  
+  .text-gray-600 {
+    color: rgb(75, 85, 99) !important;
+  }
+}
+
 /* Custom animations */
 @keyframes fade-in {
   from {
@@ -25,6 +63,34 @@ html, body, #root {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+}
+
+/* Fix login modal positioning */
+.fixed {
+  position: fixed !important;
+}
+
+.inset-0 {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+}
+
+.z-50 {
+  z-index: 50 !important;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.items-center {
+  align-items: center !important;
+}
+
+.justify-center {
+  justify-content: center !important;
 }
 
 /* Leaflet map styling */

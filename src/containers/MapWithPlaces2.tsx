@@ -188,6 +188,9 @@ export default function MapWithPlaces() {
 
   return (
     <div className="flex h-screen bg-gray-100 relative">
+      {/* Ha nincs bejelentkezve, mutassuk a login modalt */}
+      {!user && <LoginModal />}
+
       {/* Blur effect ha nincs bejelentkezve */}
       <div
         className={`flex h-screen w-full ${
@@ -225,9 +228,6 @@ export default function MapWithPlaces() {
         </div>
       </div>
 
-      {/* Ha nincs bejelentkezve, mutassuk a login modalt - KÍVÜL a blur-ös konténertől */}
-      {!user && <LoginModal />}
-
       {/* Form modals - csak bejelentkezett felhasználóknak */}
       {user && addingPosition && (
         <PlaceForm
@@ -239,11 +239,10 @@ export default function MapWithPlaces() {
 
       {user && editingPlace && (
         <PlaceForm
-          place={editingPlace}
           position={[editingPlace.lat, editingPlace.lng]}
+          existingPlace={editingPlace}
           onSave={handleUpdatePlace}
           onCancel={handleCloseForm}
-          isEditing={true}
         />
       )}
 
@@ -254,12 +253,12 @@ export default function MapWithPlaces() {
           onEdit={
             user?.id === selectedPlace.user_id
               ? () => handleEditPlace(selectedPlace)
-              : () => {}
+              : undefined
           }
           onDelete={
             user?.id === selectedPlace.user_id
               ? () => handleDeletePlace(selectedPlace.id)
-              : () => {}
+              : undefined
           }
         />
       )}
