@@ -49,6 +49,16 @@ export default function MapWithPlaces() {
     }
 
     try {
+      // Ha van nyitott form (új hely hozzáadása vagy szerkesztés), akkor zárjuk be
+      if (addingPosition || editingPlace) {
+        setAddingPosition(null);
+        setEditingPlace(null);
+        setSelectedPlace(null);
+        console.log("Closing open form");
+        return;
+      }
+
+      // Egyébként új hely hozzáadása
       setAddingPosition(position);
       setSelectedPlace(null);
       setEditingPlace(null);
