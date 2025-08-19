@@ -37,7 +37,6 @@ export interface PlaceFormData {
   deposit_price?: number;
   utilities_price?: number;
   room_count?: number;
-  property_type?: 'apartment' | 'house' | 'room' | 'other';
   is_public: boolean;
   // Kompatibilitás
   title?: string;

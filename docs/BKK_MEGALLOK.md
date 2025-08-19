@@ -45,7 +45,7 @@ https://futar.bkk.hu/api/query/v1/ws/otp/api/where/stops-for-location.json
 ### Paraméterek
 - `key`: BKK API kulcs
 - `lat`, `lon`: Térkép középpontja
-- `radius`: 1000 (méterben)
+- `radius`: 500 (méterben)
 - `maxCount`: 100
 
 ### Válasz feldolgozás

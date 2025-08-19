@@ -74,7 +74,6 @@ export default function MapWithPlaces() {
         common_cost: placeData.commonCost || 0,
         utility_cost: placeData.utilityCost || 0,
         room_count: placeData.roomCount || 1,
-        property_type: (placeData.propertyType as any) || "apartment",
         is_public: false,
       };
 
@@ -98,7 +97,6 @@ export default function MapWithPlaces() {
         deposit_price: updatedData.commonCost || 0,
         utilities_price: updatedData.utilityCost || 0,
         room_count: updatedData.roomCount || 1,
-        property_type: (updatedData.propertyType as any) || "apartment",
       };
 
       await updatePlace(editingPlace.id, updates);
