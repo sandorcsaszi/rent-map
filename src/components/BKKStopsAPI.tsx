@@ -39,21 +39,29 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
   );
 
   const loadStops = useCallback(async () => {
-    if (!visible) return;
+    if (!visible) {
+      console.log("BKK stops not visible, skipping API call");
+      return;
+    }
 
     const center = map.getCenter();
     const zoom = map.getZoom();
     const centerCoords: [number, number] = [center.lat, center.lng];
 
     if (!shouldUpdateStops(centerCoords, zoom)) {
+      console.log("BKK stops position unchanged, skipping API call");
       return;
     }
+
+    console.log("Loading BKK stops for position:", centerCoords);
 
     try {
       const stopsData = await bkkApiService.getStopsAroundCenter(
         centerCoords[0],
         centerCoords[1]
       );
+      console.log("BKK stops loaded:", stopsData.length);
+      console.log("BKK API stats:", bkkApiService.getStats());
       setStops(stopsData);
       setLastCenter(centerCoords);
       setLastZoom(zoom);
@@ -242,7 +250,14 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
 
   // Térkép események kezelése
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      console.log("BKK stops hidden, clearing data");
+      // Ha nem látható, töröljük a megállókat és markereket
+      setStops([]);
+      setLastCenter(null);
+      setLastZoom(null);
+      return;
+    }
 
     const handleMoveEnd = () => {
       debouncedLoadStops();

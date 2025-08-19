@@ -82,29 +82,53 @@ export default function PlaceForm({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          const pos = position || place!.position || [place!.lat, place!.lng];
-          onSave({
-            user_id: place?.user_id || "",
-            name: title,
-            title: title,
+          console.log("Form submitted with data:", {
+            title,
             description,
-            lat: pos[0],
-            lng: pos[1],
-            rent_price: rentPrice,
-            utility_cost: utilityCost,
-            common_cost: commonCost,
-            floor: floor,
-            hasElevator: hasElevator,
-            link: link || undefined,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            // Kompatibilitási mezők
-            position: pos,
-            price: "",
             rentPrice,
             utilityCost,
             commonCost,
+            floor,
+            hasElevator,
+            link,
           });
+
+          try {
+            if (!title || title.trim() === "") {
+              alert("A név/címke mező kitöltése kötelező!");
+              return;
+            }
+
+            const pos = position || place!.position || [place!.lat, place!.lng];
+            const formData = {
+              user_id: place?.user_id || "",
+              name: title.trim(),
+              title: title.trim(),
+              description: description.trim(),
+              address: place?.address || "",
+              lat: pos[0],
+              lng: pos[1],
+              rent_price: rentPrice || 0,
+              utility_cost: utilityCost || 0,
+              common_cost: commonCost || 0,
+              floor: floor,
+              hasElevator: hasElevator,
+              link: link?.trim() || undefined,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              // Kompatibilitási mezők
+              position: pos,
+              price: "",
+              rentPrice: rentPrice || 0,
+              utilityCost: utilityCost || 0,
+              commonCost: commonCost || 0,
+            };
+
+            console.log("Calling onSave with:", formData);
+            onSave(formData);
+          } catch (error) {
+            console.error("Error in form submission:", error);
+          }
         }}
         style={{
           display: "flex",

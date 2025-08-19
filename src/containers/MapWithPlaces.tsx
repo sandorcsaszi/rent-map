@@ -42,11 +42,20 @@ export default function MapWithPlaces() {
   }));
 
   const handleMapClick = (position: [number, number]) => {
-    if (!user) return; // Csak bejelentkezett felhasználók adhatnak hozzá helyeket
+    console.log("Map clicked at position:", position);
+    if (!user) {
+      console.log("User not authenticated, ignoring map click");
+      return;
+    }
 
-    setAddingPosition(position);
-    setSelectedPlace(null);
-    setEditingPlace(null);
+    try {
+      setAddingPosition(position);
+      setSelectedPlace(null);
+      setEditingPlace(null);
+      console.log("Adding position set:", position);
+    } catch (error) {
+      console.error("Error in handleMapClick:", error);
+    }
   };
 
   const handlePinClick = (place: Place) => {
@@ -61,7 +70,11 @@ export default function MapWithPlaces() {
   };
 
   const handleSavePlace = async (placeData: any) => {
-    if (!user || !addingPosition) return;
+    console.log("Saving place with data:", placeData);
+    if (!user || !addingPosition) {
+      console.error("Missing user or position for saving place");
+      return;
+    }
 
     try {
       const newPlace = {
@@ -76,11 +89,14 @@ export default function MapWithPlaces() {
         utility_cost: placeData.utilityCost || 0,
       };
 
+      console.log("Creating place:", newPlace);
       await createPlace(newPlace);
+      console.log("Place created successfully");
       setAddingPosition(null);
     } catch (error) {
       console.error("Hiba a hely mentésekor:", error);
       alert("Hiba történt a hely mentésekor!");
+      // Ne töröljem az addingPosition-t hiba esetén, hogy a user újrapróbálhassa
     }
   };
 

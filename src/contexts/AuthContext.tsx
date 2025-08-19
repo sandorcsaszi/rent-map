@@ -141,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return { error };
     } catch (err) {
-      console.error('Kijelentkezési hiba:', err);
+      console.error("Kijelentkezési hiba:", err);
       return { error: err as AuthError };
     }
   };

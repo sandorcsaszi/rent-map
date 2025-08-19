@@ -1333,9 +1333,15 @@ export default function Sidebar({
 
           {/* Logout button vagy dropdown arrow */}
           <button
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              signOut();
+              try {
+                console.log("Signing out...");
+                await signOut();
+                console.log("Sign out completed");
+              } catch (error) {
+                console.error("Sign out error:", error);
+              }
             }}
             style={{
               background: "none",
