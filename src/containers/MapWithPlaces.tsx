@@ -5,7 +5,6 @@ import Sidebar from "../components/Sidebar";
 import PlaceForm from "../components/PlaceForm";
 import PlaceDetails from "../components/PlaceDetails";
 import LoginModal from "../components/LoginModal";
-import UserProfile from "../components/UserProfile";
 import { useAuth } from "../contexts/AuthContext";
 import { usePlaces } from "../services/placesService";
 
@@ -208,13 +207,6 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative">
-          {/* User profile gomb */}
-          {user && (
-            <div className="absolute top-4 right-4 z-50">
-              <UserProfile />
-            </div>
-          )}
-
           <MapComponent
             places={filteredPlaces}
             onMapClick={handleMapClick}
