@@ -352,26 +352,26 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative transition-all duration-300">
-          {/* Burger Menu Button - csak bejelentkezés után és ha sidebar becsukva */}
+          {/* Burger Menu Button - mindig látható amikor becsukott a sidebar */}
           {user && sidebarCollapsed && (
             <button
               onClick={() => {
                 console.log("Burger menu clicked! Opening sidebar...");
                 setSidebarCollapsed(false);
               }}
-              className="fixed top-4 right-4 z-[1001] w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
+              className="fixed top-4 left-4 z-[1001] w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               style={{
-                borderRadius: "4px", // Szögletes sarkok
+                borderRadius: "8px",
                 boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
                 border: "2px solid rgba(255, 255, 255, 0.2)",
               }}
               title="Oldalsáv megnyitása"
             >
-              {/* Hamburger icon */}
-              <div className="flex flex-col items-center justify-center space-y-1">
-                <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
-                <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
-                <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
+              {/* Hamburger icon - nagyobb méretű */}
+              <div className="flex flex-col items-center justify-center space-y-1.5">
+                <div className="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></div>
+                <div className="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></div>
+                <div className="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></div>
               </div>
             </button>
           )}

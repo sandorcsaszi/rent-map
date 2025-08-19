@@ -1427,14 +1427,6 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Mobile overlay when sidebar is open */}
-      {!isCollapsed && onToggleCollapse && (
-        <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-[999]"
-          onClick={onToggleCollapse}
-        />
-      )}
-
       <div
         style={{
           position: "fixed",
