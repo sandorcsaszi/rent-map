@@ -114,9 +114,20 @@ export default function MapWithPlaces() {
         utility_cost: placeData.utilityCost || 0,
         link: placeData.link || null,
         floor: placeData.floor || null,
-        has_elevator: placeData.hasElevator || null,
+        has_elevator:
+          placeData.hasElevator !== undefined ? placeData.hasElevator : null,
       };
 
+      console.log("🔧 DEBUG NEW PLACE - Original placeData:", placeData);
+      console.log(
+        "🔧 DEBUG NEW PLACE - hasElevator value:",
+        placeData.hasElevator
+      );
+      console.log(
+        "🔧 DEBUG NEW PLACE - typeof hasElevator:",
+        typeof placeData.hasElevator
+      );
+      console.log("🔧 DEBUG NEW PLACE - Final newPlace object:", newPlace);
       console.log("Creating place:", newPlace);
       await createPlace(newPlace);
       console.log("Place created successfully");
@@ -142,9 +153,19 @@ export default function MapWithPlaces() {
         utility_cost: updatedData.utilityCost || 0,
         link: updatedData.link || null,
         floor: updatedData.floor || null,
-        has_elevator: updatedData.hasElevator || null,
+        has_elevator:
+          updatedData.hasElevator !== undefined
+            ? updatedData.hasElevator
+            : null,
       };
 
+      console.log("🔧 DEBUG - Original updatedData:", updatedData);
+      console.log("🔧 DEBUG - hasElevator value:", updatedData.hasElevator);
+      console.log(
+        "🔧 DEBUG - typeof hasElevator:",
+        typeof updatedData.hasElevator
+      );
+      console.log("🔧 DEBUG - Final updates object:", updates);
       console.log("Sending updates to database:", updates);
       await updatePlace(editingPlace.id, updates);
       setEditingPlace(null);
