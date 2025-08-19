@@ -1448,7 +1448,7 @@ export default function Sidebar({
         <div
           style={{
             padding: "24px 20px 0px",
-            background: `linear-gradient(135deg, #ef4444 0%, #dc2626 100%)`,
+            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
             color: colors.white,
           }}
           className="px-5 pt-6 md:px-5 md:pt-6 sm:px-4 sm:pt-4 relative"
