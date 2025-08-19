@@ -26,7 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (isLocalhost) {
       // Local development - főoldal
-      return import.meta.env.VITE_LOCAL_CALLBACK_URL || "http://localhost:5173/";
+      return (
+        import.meta.env.VITE_LOCAL_CALLBACK_URL || "http://localhost:5173/"
+      );
     } else {
       // Production - főoldal
       return (
@@ -95,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initSession = async () => {
       try {
         console.log("🔄 InitSession started");
-        
+
         // Check for URL parameters that indicate failed auth
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get("error");
@@ -121,7 +123,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: sessionError,
         } = await supabase.auth.getSession();
 
-        console.log("📊 Session result:", { session: !!session, error: sessionError });
+        console.log("📊 Session result:", {
+          session: !!session,
+          error: sessionError,
+        });
 
         if (!mounted) {
           console.log("❌ Component unmounted, aborting");
