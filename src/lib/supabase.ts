@@ -13,6 +13,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
+    detectSessionInUrl: true,
+    // Local storage használata a session megőrzésére
+    storage: window.localStorage,
+    // Debug mód fejlesztéshez
+    debug: false,
+  },
+  // Globális beállítások
+  global: {
+    headers: {
+      'x-application-name': 'rent-map',
+    },
   },
 })
 

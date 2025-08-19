@@ -8,20 +8,31 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { error } = await supabase.auth.getSession();
+        console.log("Processing auth callback...");
+
+        // Hash fragment kezelése OAuth callback után
+        const { data, error } = await supabase.auth.getSession();
 
         if (error) {
           console.error("Auth callback hiba:", error);
           // Vissza a főoldalra hiba esetén
-          navigate("/");
+          navigate("/", { replace: true });
           return;
         }
 
-        // Sikeres bejelentkezés után vissza a főoldalra
-        navigate("/");
+        if (data.session) {
+          console.log("Session found, user authenticated");
+          // Kis késleltetés, hogy az auth context frissülhessen
+          setTimeout(() => {
+            navigate("/", { replace: true });
+          }, 1000);
+        } else {
+          console.log("No session found");
+          navigate("/", { replace: true });
+        }
       } catch (error) {
         console.error("Hiba az auth callback során:", error);
-        navigate("/");
+        navigate("/", { replace: true });
       }
     };
 

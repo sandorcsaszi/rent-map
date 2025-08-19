@@ -95,13 +95,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("Auth state change:", event, session?.user?.id);
 
       const currentUser = session?.user ?? null;
+
+      // SIGNED_OUT event esetén azonnal töröljük az állapotot
+      if (event === "SIGNED_OUT") {
+        console.log("User signed out, clearing state");
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
       setUser(currentUser);
 
-      // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
-      if (currentUser && event === "SIGNED_IN") {
+      // Ha van felhasználó és bejelentkezett
+      if (
+        currentUser &&
+        (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
+      ) {
+        console.log("User signed in or token refreshed, ensuring profile");
         const userProfile = await ensureUserProfile(currentUser);
         setProfile(userProfile);
-      } else {
+      } else if (!currentUser) {
+        console.log("No user, clearing profile");
         setProfile(null);
       }
 
@@ -112,37 +127,101 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    return { error };
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          // Session kiterjesztése 1 hétre
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
+      });
+
+      if (error) {
+        setLoading(false);
+        return { error };
+      }
+
+      return { error: null };
+    } catch (err) {
+      setLoading(false);
+      console.error("Google bejelentkezési hiba:", err);
+      return { error: err as AuthError };
+    }
   };
 
   const signInWithGitHub = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    return { error };
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          // Session kiterjesztése 1 hétre
+          queryParams: {
+            scope: "read:user user:email",
+          },
+        },
+      });
+
+      if (error) {
+        setLoading(false);
+        return { error };
+      }
+
+      return { error: null };
+    } catch (err) {
+      setLoading(false);
+      console.error("GitHub bejelentkezési hiba:", err);
+      return { error: err as AuthError };
+    }
   };
 
   const signOut = async () => {
+    console.log("Kijelentkezés kezdeményezése...");
+    setLoading(true);
+
     try {
+      // Clear local state immediately
+      setUser(null);
+      setProfile(null);
+
+      // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      if (!error) {
-        // Explicitly clear the state after successful signout
-        setUser(null);
-        setProfile(null);
+
+      if (error) {
+        console.error("Supabase kijelentkezési hiba:", error);
+      } else {
+        console.log("Sikeres kijelentkezés");
       }
+
+      // Clear any local storage data
+      localStorage.removeItem("supabase.auth.token");
+      sessionStorage.removeItem("supabase.auth.token");
+
+      // Force reload to ensure clean state
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+
       return { error };
     } catch (err) {
-      console.error("Kijelentkezési hiba:", err);
+      console.error("Kijelentkezési kivétel:", err);
+
+      // Even if error, clear local state and reload
+      setUser(null);
+      setProfile(null);
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+
       return { error: err as AuthError };
+    } finally {
+      setLoading(false);
     }
   };
 
