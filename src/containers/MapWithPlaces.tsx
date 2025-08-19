@@ -42,10 +42,7 @@ export default function MapWithPlaces() {
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      // Ha nagyon kicsi a képernyő, automatikusan becsukjuk
-      if (window.innerWidth < 480) {
-        setSidebarCollapsed(true);
-      }
+      // Eltávolítottam az automatikus bezárást - csak manual vezérlés
     };
 
     window.addEventListener("resize", handleResize);
@@ -352,24 +349,28 @@ export default function MapWithPlaces() {
           filters={filters}
           onFiltersChange={setFilters}
           isCollapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onToggleCollapse={() => {
+            // Csak az X gombbal záródjon be
+            setSidebarCollapsed(true);
+          }}
         />
 
         <div className="flex-1 relative transition-all duration-300">
-          {/* TESZT: Mindig megjelenítjük a burger menu-t */}
-          <button
-            onClick={() => {
-              console.log("Burger menu clicked! User:", !!user, "Collapsed:", sidebarCollapsed);
-              setSidebarCollapsed(false);
-            }}
-            className="fixed top-4 right-4 z-[1001] w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
-            style={{
-              borderRadius: "4px", // Szögletes sarkok
-              boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
-              border: "2px solid rgba(255, 255, 255, 0.2)",
-            }}
-            title="Oldalsáv megnyitása"
-          >
+          {/* Burger Menu Button - csak bejelentkezés után és ha sidebar becsukva */}
+          {user && sidebarCollapsed && (
+            <button
+              onClick={() => {
+                console.log("Burger menu clicked! Opening sidebar...");
+                setSidebarCollapsed(false);
+              }}
+              className="fixed top-4 right-4 z-[1001] w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
+              style={{
+                borderRadius: "4px", // Szögletes sarkok
+                boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
+                border: "2px solid rgba(255, 255, 255, 0.2)",
+              }}
+              title="Oldalsáv megnyitása"
+            >
               {/* Hamburger icon */}
               <div className="flex flex-col items-center justify-center space-y-1">
                 <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
@@ -377,6 +378,7 @@ export default function MapWithPlaces() {
                 <div className="w-5 h-0.5 bg-white rounded-full transition-all duration-300"></div>
               </div>
             </button>
+          )}
 
           <MapComponent
             places={filteredPlaces}

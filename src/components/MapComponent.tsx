@@ -1,10 +1,10 @@
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import type { Place } from "../types/Place";
 import PinComponent from "./PinComponent";
 import BKKStopsAPI from "./BKKStopsAPI";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -37,6 +37,40 @@ function MapClickHandler({
       onMapClick([e.latlng.lat, e.latlng.lng]);
     },
   });
+  return null;
+}
+
+// Komponens a térkép újrarajzolásához
+function MapResizer() {
+  const map = useMap();
+
+  useEffect(() => {
+    const resizeMap = () => {
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+    };
+
+    // Kezdeti újrarajzolás
+    resizeMap();
+
+    // Window resize listener
+    window.addEventListener("resize", resizeMap);
+
+    // Sidebar változásokra is figyelünk
+    const observer = new MutationObserver(resizeMap);
+    observer.observe(document.body, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      window.removeEventListener("resize", resizeMap);
+      observer.disconnect();
+    };
+  }, [map]);
+
   return null;
 }
 
@@ -115,6 +149,7 @@ export default function MapComponent({
           attribution="&copy; OpenStreetMap contributors"
         />
         <MapClickHandler onMapClick={onMapClick} />
+        <MapResizer />
         <BKKStopsAPI visible={showBKKStops} />
         {places.map((place) => (
           <PinComponent
