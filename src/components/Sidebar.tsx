@@ -19,6 +19,8 @@ interface SidebarProps {
   onSearchChange: (term: string) => void;
   filters: FilterCriteria;
   onFiltersChange: (filters: FilterCriteria) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 // Blue-white theme colors
@@ -1244,6 +1246,8 @@ export default function Sidebar({
   onSearchChange,
   filters,
   onFiltersChange,
+  isCollapsed = false,
+  onToggleCollapse,
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<"search" | "add">("search");
   const { user, signOut } = useAuth();
@@ -1427,23 +1431,58 @@ export default function Sidebar({
     filters.hasElevator !== null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "0",
-        right: "0",
-        width: "380px",
-        height: "100vh",
-        background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
-        borderLeft: `3px solid ${colors.primary}`,
-        boxShadow: `-4px 0 20px ${colors.primary}15`,
-        zIndex: 1000,
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Header */}
+    <>
+      {/* Mobile overlay when sidebar is open */}
+      {!isCollapsed && onToggleCollapse && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-[999]"
+          style={{
+            animation: "fadeIn 0.3s ease-out",
+          }}
+          onClick={onToggleCollapse}
+        />
+      )}
+
+      <div
+        style={{
+          position: "fixed",
+          top: "0",
+          right: "0",
+          width: "100%",
+          maxWidth: "380px",
+          height: "100vh",
+          background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
+          borderLeft: `3px solid ${colors.primary}`,
+          boxShadow: `-4px 0 20px ${colors.primary}15`,
+          zIndex: 1000,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          transform: isCollapsed ? "translateX(100%)" : "translateX(0)",
+          transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
+        className="w-full md:w-96"
+      >
+        {/* Modern Close Button */}
+        {onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:rotate-90 z-10"
+            style={{
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+            }}
+            title="Oldalsáv becsukása"
+          >
+            {/* Modern X icon */}
+            <div className="relative w-5 h-5">
+              <div className="absolute top-1/2 left-1/2 w-4 h-0.5 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 rotate-45"></div>
+              <div className="absolute top-1/2 left-1/2 w-4 h-0.5 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 -rotate-45"></div>
+            </div>
+          </button>
+        )}
+
+        {/* Header */}
       <div
         style={{
           padding: "24px 20px 0px",
@@ -1549,6 +1588,7 @@ export default function Sidebar({
 
       {/* Profile Bar */}
       <ProfileBar />
-    </div>
+      </div>
+    </>
   );
 }
