@@ -21,52 +21,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Profil létrehozása, ha nem létezik
   const ensureUserProfile = async (user: User) => {
     try {
-      console.log('Profil ellenőrzése felhasználónak:', user.id);
-      
+      console.log("Profil ellenőrzése felhasználónak:", user.id);
+
       // Ellenőrizzük, hogy létezik-e már a profil
       const { data: existingProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .single();
 
       if (existingProfile && !fetchError) {
-        console.log('Profil már létezik:', existingProfile);
+        console.log("Profil már létezik:", existingProfile);
         return existingProfile;
       }
 
       // Ha nem létezik, létrehozzuk
-      console.log('Új profil létrehozása:', user.id);
-      
+      console.log("Új profil létrehozása:", user.id);
+
       const newProfile = {
         id: user.id,
-        username: user.email?.split('@')[0] || 'user',
-        full_name: user.user_metadata?.full_name || 
-                   user.user_metadata?.name || 
-                   user.email?.split('@')[0] || 
-                   'Névtelen felhasználó',
-        avatar_url: user.user_metadata?.avatar_url || 
-                    user.user_metadata?.picture || 
-                    null,
+        username: user.email?.split("@")[0] || "user",
+        full_name:
+          user.user_metadata?.full_name ||
+          user.user_metadata?.name ||
+          user.email?.split("@")[0] ||
+          "Névtelen felhasználó",
+        avatar_url:
+          user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
         updated_at: new Date().toISOString(),
       };
 
       const { data: createdProfile, error: createError } = await supabase
-        .from('profiles')
+        .from("profiles")
         .insert([newProfile])
         .select()
         .single();
 
       if (createError) {
-        console.error('Profil létrehozási hiba:', createError);
+        console.error("Profil létrehozási hiba:", createError);
         return null;
       }
 
-      console.log('Profil sikeresen létrehozva:', createdProfile);
+      console.log("Profil sikeresen létrehozva:", createdProfile);
       return createdProfile;
-
     } catch (error) {
-      console.error('Profil kezelési hiba:', error);
+      console.error("Profil kezelési hiba:", error);
       return null;
     }
   };
@@ -76,10 +75,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      
+
       // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
       if (currentUser) {
-        ensureUserProfile(currentUser).then(userProfile => {
+        ensureUserProfile(currentUser).then((userProfile) => {
           setProfile(userProfile);
           setLoading(false);
         });
@@ -93,19 +92,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.id);
-      
+      console.log("Auth state change:", event, session?.user?.id);
+
       const currentUser = session?.user ?? null;
       setUser(currentUser);
 
       // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
-      if (currentUser && event === 'SIGNED_IN') {
+      if (currentUser && event === "SIGNED_IN") {
         const userProfile = await ensureUserProfile(currentUser);
         setProfile(userProfile);
       } else {
         setProfile(null);
       }
-      
+
       setLoading(false);
     });
 
