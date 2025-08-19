@@ -64,6 +64,7 @@ export default function PlaceForm({
 
       {/* Form modal */}
       <div
+        data-testid="place-form"
         style={{
           position: "fixed",
           left: "50%",

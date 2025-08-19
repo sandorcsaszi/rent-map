@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Place, FilterCriteria } from "../types/Place";
 import MapComponent from "../components/MapComponent";
 import Sidebar from "../components/Sidebar";
@@ -49,16 +49,6 @@ export default function MapWithPlaces() {
     }
 
     try {
-      // Ha van nyitott form (új hely hozzáadása vagy szerkesztés), akkor zárjuk be
-      if (addingPosition || editingPlace) {
-        setAddingPosition(null);
-        setEditingPlace(null);
-        setSelectedPlace(null);
-        console.log("Closing open form");
-        return;
-      }
-
-      // Egyébként új hely hozzáadása
       setAddingPosition(position);
       setSelectedPlace(null);
       setEditingPlace(null);
@@ -78,6 +68,31 @@ export default function MapWithPlaces() {
     setAddingPosition(null);
     setEditingPlace(null);
   };
+
+  // Globális kattintás kezelő a form bezárásához
+  useEffect(() => {
+    const handleGlobalClick = (event: MouseEvent) => {
+      // Ha van nyitott form (addingPosition vagy editingPlace)
+      if (addingPosition || editingPlace) {
+        // Ellenőrizzük, hogy a kattintás a PlaceForm-on belül történt-e
+        const target = event.target as Element;
+        const formElement = target.closest('[data-testid="place-form"]');
+
+        // Ha nem a form-on belül kattintottunk, zárjuk be a form-ot
+        if (!formElement) {
+          handleCloseForm();
+        }
+      }
+    };
+
+    // Hozzáadjuk az event listenert
+    document.addEventListener("click", handleGlobalClick, true);
+
+    // Cleanup a komponens unmount-jakor
+    return () => {
+      document.removeEventListener("click", handleGlobalClick, true);
+    };
+  }, [addingPosition, editingPlace]);
 
   const handleSavePlace = async (placeData: any) => {
     console.log("Saving place with data:", placeData);
