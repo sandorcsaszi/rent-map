@@ -639,6 +639,8 @@ function SidebarAddForm({
   onAddByAddress: (place: Omit<Place, "id">) => void;
 }) {
   const [newPlace, setNewPlace] = useState<PlaceFormData>({
+    name: "",
+    is_public: true,
     title: "",
     price: "",
     description: "",
@@ -662,17 +664,24 @@ function SidebarAddForm({
       const coordinates = await geocodeAddress(newPlace.address);
       if (coordinates) {
         onAddByAddress({
+          user_id: '',
+          name: newPlace.title || '',
           title: newPlace.title,
-          price: "", // Üresen hagyom a kompatibilitás miatt
+          price: "",
           description: newPlace.description || "",
           position: coordinates,
+          lat: coordinates[0],
+          lng: coordinates[1],
+          is_public: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
           createdAt: new Date().toISOString(),
           link: newPlace.link || undefined,
           images:
             newPlace.images && newPlace.images.length > 0
               ? newPlace.images
               : undefined,
-          address: newPlace.address, // Cím hozzáadása
+          address: newPlace.address,
           rentPrice: newPlace.rentPrice,
           utilityCost: newPlace.utilityCost,
           commonCost: newPlace.commonCost,
@@ -680,6 +689,8 @@ function SidebarAddForm({
           hasElevator: newPlace.hasElevator,
         });
         setNewPlace({
+          name: "",
+          is_public: true,
           title: "",
           price: "",
           description: "",
@@ -1371,7 +1382,7 @@ function PlacesList({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDeletePlace(place.id);
+                  onDeletePlace(parseInt(place.id) || 0);
                 }}
                 style={{
                   background: "none",
@@ -1419,8 +1430,8 @@ function PlacesList({
                   lineHeight: "1.4",
                 }}
               >
-                📍 {place.position[0].toFixed(4)},{" "}
-                {place.position[1].toFixed(4)}
+                📍 {(place.position?.[0] || place.lat).toFixed(4)},{" "}
+                {(place.position?.[1] || place.lng).toFixed(4)}
               </p>
             )}
 
@@ -1496,7 +1507,7 @@ export default function Sidebar({
   // Filter places based on search term first, then apply filters
   const searchFilteredPlaces = places.filter(
     (place) =>
-      place.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (place.title || place.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (place.description &&
         place.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );

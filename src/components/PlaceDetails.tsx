@@ -340,8 +340,8 @@ export default function PlaceDetails({
             color: colors.gray,
           }}
         >
-          📍 Koordináták: {place.position[0].toFixed(5)},{" "}
-          {place.position[1].toFixed(5)}
+          📍 Koordináták: {(place.position?.[0] || place.lat).toFixed(5)},{" "}
+          {(place.position?.[1] || place.lng).toFixed(5)}
         </div>
 
         <div

@@ -106,11 +106,23 @@ export default function PlaceForm({
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          const pos = position || place!.position || [place!.lat, place!.lng];
           onSave({
-            position: position || place!.position,
-            title,
-            price: "", // Üresen hagyom a kompatibilitás miatt
+            user_id: place?.user_id || '',
+            name: title,
             description,
+            lat: pos[0],
+            lng: pos[1],
+            rent_price: rentPrice,
+            utilities_price: utilityCost,
+            deposit_price: commonCost,
+            is_public: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            // Kompatibilitás
+            position: pos,
+            title,
+            price: "",
             link: link || undefined,
             images: images.length > 0 ? images : undefined,
             rentPrice,

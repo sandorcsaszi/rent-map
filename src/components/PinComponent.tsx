@@ -27,7 +27,7 @@ export default function PinComponent({
 
   return (
     <Marker
-      position={place.position}
+      position={place.position || [place.lat, place.lng]}
       eventHandlers={{
         click: onClick,
       }}

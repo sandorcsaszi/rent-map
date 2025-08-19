@@ -121,12 +121,12 @@ export default function LoginModal() {
         )}
 
         {/* Bejelentkezési gombok */}
-        <div className="space-y-12 flex flex-col items-center">
+        <div className="flex gap-6 justify-center">
           {/* Google bejelentkezés */}
           <button
             onClick={handleGoogleSignIn}
             disabled={loading !== null}
-            className="group relative w-64 flex items-center justify-center gap-4 font-semibold py-5 px-8 transition-all duration-150 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
+            className="group relative flex items-center justify-center gap-3 font-semibold py-4 px-6 transition-all duration-150 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
             style={{
               background:
                 "linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%)",
@@ -193,7 +193,7 @@ export default function LoginModal() {
           <button
             onClick={handleGitHubSignIn}
             disabled={loading !== null}
-            className="group relative w-64 flex items-center justify-center gap-4 font-semibold py-5 px-8 transition-all duration-150 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
+            className="group relative flex items-center justify-center gap-3 font-semibold py-4 px-6 transition-all duration-150 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden"
             style={{
               background:
                 "linear-gradient(135deg, #0f1419 0%, #1c2128 50%, #0f1419 100%)",
