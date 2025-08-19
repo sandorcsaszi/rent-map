@@ -12,7 +12,6 @@ export interface Place {
   utility_cost?: number;
   common_cost?: number;
   room_count?: number;
-  property_type?: string;
   floor?: number;
   has_elevator?: boolean;
   link?: string;
@@ -44,7 +43,6 @@ export interface PlaceFormData {
   title?: string;
   price?: string;
   link?: string;
-  images?: string[];
   rentPrice?: number;
   utilityCost?: number;
   commonCost?: number;
