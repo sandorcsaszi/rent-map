@@ -25,7 +25,6 @@ Mivel programozó vagyok, úgy döntöttem, inkább készítek egy saját megold
 - **Kattintható hozzáadás**: Egyszerűen kattints a térképre új albérlet hozzáadásához
 - **Dinamikus címkék**: Be- és kikapcsolható pin-ek címkékkel
 
-![Térkép Funkciók](screenshots/map-features.png)
 
 ### 📍 Intelligens Helyadatok
 - **Automatikus geocoding**: Cím begépelése során automatikus helykiválasztás
@@ -287,4 +286,3 @@ Köszönöm mindenkinek, aki használja ezt az alkalmazást! Ha segített neked 
 
 [![GitHub](https://img.shields.io/badge/GitHub-sandorcsaszi-181717?style=flat&logo=github)](https://github.com/sandorcsaszi)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Császi_Sándor-0077B5?style=flat&logo=linkedin)](https://linkedin.com/in/sandorcsaszi)
-```
