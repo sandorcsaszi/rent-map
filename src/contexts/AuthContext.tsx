@@ -105,11 +105,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error) {
           console.log("Auth error detected in URL:", error, errorDescription);
 
-          // Only clear session for specific errors, not all errors
-          if (error === "access_denied" || error === "unauthorized_client") {
-            console.log("Clearing session due to serious auth error");
-            await supabase.auth.signOut({ scope: "local" });
-          }
+          // Ne töröljük a session-t URL hibák miatt, csak logoljuk
+          console.log("Auth error in URL, but keeping existing session");
 
           // Clean URL regardless
           window.history.replaceState(
@@ -128,14 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (sessionError) {
           console.error("Session init error:", sessionError);
-          // Only clear session if it's really corrupted
-          if (
-            sessionError.message?.includes("invalid") ||
-            sessionError.message?.includes("expired")
-          ) {
-            console.log("Clearing corrupted session");
-            await supabase.auth.signOut({ scope: "local" });
-          }
+          // Ne töröljük automatikusan a session-t, hadd próbálja újra később
           setLoading(false);
           return;
         }
@@ -158,13 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("Session initialization error:", error);
-        // Clear potentially corrupted session
-        try {
-          await supabase.auth.signOut({ scope: "local" });
-        } catch (clearError) {
-          console.error("Failed to clear corrupted session:", clearError);
-        }
-
+        // Ne töröljük automatikusan a session-t, csak logoljuk a hibát
         if (mounted) {
           setLoading(false);
         }
@@ -288,7 +272,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null);
       setLoading(true);
 
-      // Sign out from Supabase with scope 'local' to clear all auth data
+      // Sign out from Supabase - csak Supabase session törlése
       const { error } = await supabase.auth.signOut({ scope: "local" });
 
       if (error) {
@@ -297,38 +281,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log("Sikeres kijelentkezés");
       }
 
-      // Clear browser storage manually to ensure clean slate
-      const keys = Object.keys(localStorage);
-      keys.forEach((key) => {
-        if (key.includes("supabase") || key.includes("auth")) {
-          localStorage.removeItem(key);
-        }
-      });
-
-      const sessionKeys = Object.keys(sessionStorage);
-      sessionKeys.forEach((key) => {
-        if (key.includes("supabase") || key.includes("auth")) {
-          sessionStorage.removeItem(key);
-        }
-      });
-
       setLoading(false);
       return { error };
     } catch (err) {
       console.error("Kijelentkezési kivétel:", err);
 
-      // Even if error, clear local state and storage
+      // Even if error, clear local state
       setUser(null);
       setProfile(null);
-
-      // Force clear storage
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-      } catch (storageError) {
-        console.error("Storage clear error:", storageError);
-      }
-
       setLoading(false);
       return { error: err as AuthError };
     }
