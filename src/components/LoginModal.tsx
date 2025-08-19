@@ -94,7 +94,7 @@ export default function LoginModal() {
               backgroundClip: "text",
             }}
           >
-            Rent Map
+            Albitérkép
           </h1>
           <p className="text-lg" style={{ color: "#64748b" }}>
             Jelentkezz be a folytatáshoz
