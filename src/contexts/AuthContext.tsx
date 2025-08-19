@@ -72,20 +72,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
-    
-    // Jelenlegi session lekérése
+
+    // Automatikus session cleanup és inicializálás
     const initSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
+        // Check for URL parameters that indicate failed auth
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get("error");
+        const errorDescription = urlParams.get("error_description");
+
         if (error) {
-          console.error("Session init error:", error);
+          console.log(
+            "Auth error detected in URL, clearing session:",
+            error,
+            errorDescription
+          );
+          await supabase.auth.signOut({ scope: "local" });
+          // Clean URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
+        }
+
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (!mounted) return;
+
+        if (sessionError) {
+          console.error("Session init error:", sessionError);
+          // If session is corrupted, clear it
+          await supabase.auth.signOut({ scope: "local" });
           setLoading(false);
           return;
         }
-        
+
         const currentUser = session?.user ?? null;
         setUser(currentUser);
 
@@ -98,18 +123,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setProfile(null);
         }
-        
+
         if (mounted) {
           setLoading(false);
         }
       } catch (error) {
         console.error("Session initialization error:", error);
+        // Clear potentially corrupted session
+        try {
+          await supabase.auth.signOut({ scope: "local" });
+        } catch (clearError) {
+          console.error("Failed to clear corrupted session:", clearError);
+        }
+
         if (mounted) {
           setLoading(false);
         }
       }
     };
-    
+
     initSession();
 
     // Auth változások figyelése
@@ -156,7 +188,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       console.log("Initiating Google sign in...");
-      
+
+      // Clear any existing session first to allow account switching
+      await supabase.auth.signOut({ scope: "local" });
+
+      // Small delay to ensure cleanup
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       // Force account selection and consent every time
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -164,8 +202,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: "offline",
-            prompt: "consent select_account", // Force account selection and consent
+            prompt: "consent select_account", // Force account selection
             include_granted_scopes: "true",
+            // Add random state to prevent caching
+            state: `google_${Date.now()}_${Math.random()
+              .toString(36)
+              .substr(2, 9)}`,
           },
           skipBrowserRedirect: false,
         },
@@ -186,8 +228,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGitHub = async () => {
     try {
       console.log("Initiating GitHub sign in...");
-      
-      // GitHub doesn't need special prompt handling, but ensure clean redirect
+
+      // Clear any existing session first to allow account switching
+      await supabase.auth.signOut({ scope: "local" });
+
+      // Small delay to ensure cleanup
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // GitHub sign in with fresh state
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
@@ -195,6 +243,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           queryParams: {
             scope: "read:user user:email",
             allow_signup: "true",
+            // Add random state to prevent caching
+            state: `github_${Date.now()}_${Math.random()
+              .toString(36)
+              .substr(2, 9)}`,
           },
           skipBrowserRedirect: false,
         },
@@ -214,46 +266,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     console.log("Kijelentkezés kezdeményezése...");
-    
+
     try {
       // Clear local state first
       setUser(null);
       setProfile(null);
       setLoading(true);
-      
+
       // Sign out from Supabase with scope 'local' to clear all auth data
-      const { error } = await supabase.auth.signOut({ scope: 'local' });
-      
+      const { error } = await supabase.auth.signOut({ scope: "local" });
+
       if (error) {
         console.error("Supabase kijelentkezési hiba:", error);
       } else {
         console.log("Sikeres kijelentkezés");
       }
-      
+
       // Clear browser storage manually to ensure clean slate
       const keys = Object.keys(localStorage);
-      keys.forEach(key => {
-        if (key.includes('supabase') || key.includes('auth')) {
+      keys.forEach((key) => {
+        if (key.includes("supabase") || key.includes("auth")) {
           localStorage.removeItem(key);
         }
       });
-      
+
       const sessionKeys = Object.keys(sessionStorage);
-      sessionKeys.forEach(key => {
-        if (key.includes('supabase') || key.includes('auth')) {
+      sessionKeys.forEach((key) => {
+        if (key.includes("supabase") || key.includes("auth")) {
           sessionStorage.removeItem(key);
         }
       });
-      
+
       setLoading(false);
       return { error };
     } catch (err) {
       console.error("Kijelentkezési kivétel:", err);
-      
+
       // Even if error, clear local state and storage
       setUser(null);
       setProfile(null);
-      
+
       // Force clear storage
       try {
         localStorage.clear();
@@ -261,7 +313,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (storageError) {
         console.error("Storage clear error:", storageError);
       }
-      
+
       setLoading(false);
       return { error: err as AuthError };
     }

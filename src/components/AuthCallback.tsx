@@ -9,10 +9,10 @@ export default function AuthCallback() {
     const handleAuthCallback = async () => {
       try {
         console.log("Processing auth callback...");
-        
+
         // Exchange the code for a session
         const { data, error } = await supabase.auth.getUser();
-        
+
         if (error) {
           console.error("Auth callback hiba:", error);
           navigate("/", { replace: true });
@@ -35,7 +35,7 @@ export default function AuthCallback() {
 
     // Small delay to ensure URL parameters are processed
     const timer = setTimeout(handleAuthCallback, 500);
-    
+
     return () => clearTimeout(timer);
   }, [navigate]);
 

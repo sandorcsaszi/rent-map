@@ -3,24 +3,9 @@ import { useAuth } from "../contexts/AuthContext";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 
 export default function LoginModal() {
-  const { signInWithGoogle, signInWithGitHub, signOut } = useAuth();
-  const [loading, setLoading] = useState<"google" | "github" | "clear" | null>(null);
+  const { signInWithGoogle, signInWithGitHub } = useAuth();
+  const [loading, setLoading] = useState<"google" | "github" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showClearOption, setShowClearOption] = useState(false);
-
-  const handleClearSession = async () => {
-    setLoading("clear");
-    setError(null);
-    try {
-      await signOut();
-      setShowClearOption(false);
-      setError(null);
-    } catch (err) {
-      setError("Hiba történt a session törlésekor");
-    } finally {
-      setLoading(null);
-    }
-  };
 
   const handleGoogleSignIn = async () => {
     setLoading("google");
@@ -272,39 +257,6 @@ export default function LoginModal() {
             </div>
           </button>
         </div>
-
-        {/* Másik fiók opció */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setShowClearOption(!showClearOption)}
-            className="text-sm text-gray-600 hover:text-gray-800 underline"
-            style={{ transition: "color 0.2s" }}
-          >
-            Másik fiókkal szeretnék belépni
-          </button>
-        </div>
-
-        {showClearOption && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-700 mb-3">
-              Ha korábban másik fiókkal voltál bejelentkezve, törölheted a mentett session-t:
-            </p>
-            <button
-              onClick={handleClearSession}
-              disabled={loading === "clear"}
-              className="w-full py-2 px-4 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {loading === "clear" ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span>Session törlése...</span>
-                </div>
-              ) : (
-                "Session törlése és újrakezdés"
-              )}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
