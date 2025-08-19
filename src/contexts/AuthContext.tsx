@@ -94,6 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Automatikus session cleanup és inicializálás
     const initSession = async () => {
       try {
+        console.log("🔄 InitSession started");
+        
         // Check for URL parameters that indicate failed auth
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get("error");
@@ -113,40 +115,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           );
         }
 
+        console.log("📡 Getting session from Supabase...");
         const {
           data: { session },
           error: sessionError,
         } = await supabase.auth.getSession();
 
-        if (!mounted) return;
+        console.log("📊 Session result:", { session: !!session, error: sessionError });
+
+        if (!mounted) {
+          console.log("❌ Component unmounted, aborting");
+          return;
+        }
 
         if (sessionError) {
           console.error("Session init error:", sessionError);
           // Ne töröljük automatikusan a session-t, hadd próbálja újra később
+          console.log("⏹️ Setting loading false due to session error");
           setLoading(false);
           return;
         }
 
         const currentUser = session?.user ?? null;
+        console.log("👤 Current user:", currentUser?.email || "None");
         setUser(currentUser);
 
         // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
         if (currentUser) {
+          console.log("🔍 Ensuring user profile...");
           const userProfile = await ensureUserProfile(currentUser);
+          console.log("📋 Profile result:", userProfile?.username || "Failed");
           if (mounted) {
             setProfile(userProfile);
           }
         } else {
+          console.log("❌ No user, clearing profile");
           setProfile(null);
         }
 
         if (mounted) {
+          console.log("✅ InitSession complete, setting loading false");
           setLoading(false);
         }
       } catch (error) {
         console.error("Session initialization error:", error);
         // Ne töröljük automatikusan a session-t, csak logoljuk a hibát
         if (mounted) {
+          console.log("⏹️ Setting loading false due to init error");
           setLoading(false);
         }
       }
