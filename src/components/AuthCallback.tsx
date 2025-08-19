@@ -10,54 +10,54 @@ export default function AuthCallback() {
       try {
         console.log("Processing auth callback...");
         console.log("Current URL:", window.location.href);
-        
-        // First, try to get the session from the URL hash/query
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-        
+
+        // Check for OAuth errors in URL first
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlHash = new URLSearchParams(window.location.hash.substring(1));
+        const error = urlParams.get("error") || urlHash.get("error");
+        const errorDescription =
+          urlParams.get("error_description") ||
+          urlHash.get("error_description");
+
+        if (error) {
+          console.error("OAuth error in callback:", error, errorDescription);
+          // Redirect back to home page on error
+          navigate("/", { replace: true });
+          return;
+        }
+
+        // Try to get the session
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession();
+
         if (sessionError) {
-          console.error("Session error:", sessionError);
+          console.error("Session error in callback:", sessionError);
           navigate("/", { replace: true });
           return;
         }
 
         if (sessionData.session && sessionData.session.user) {
-          console.log("Session found, user authenticated:", sessionData.session.user.id);
-          console.log("Access token:", sessionData.session.access_token ? "Present" : "Missing");
-          
-          // Wait a bit longer for the auth context to update
+          console.log(
+            "Session found, user authenticated:",
+            sessionData.session.user.id
+          );
+
+          // Wait for the auth context to update
           setTimeout(() => {
             navigate("/", { replace: true });
-          }, 1500);
+          }, 1000);
         } else {
-          console.log("No session found in callback, checking for user directly...");
-          
-          // Fallback: try to get user directly
-          const { data: userData, error: userError } = await supabase.auth.getUser();
-          
-          if (userError) {
-            console.error("User fetch error:", userError);
-            navigate("/", { replace: true });
-            return;
-          }
-          
-          if (userData.user) {
-            console.log("User found directly:", userData.user.id);
-            setTimeout(() => {
-              navigate("/", { replace: true });
-            }, 1500);
-          } else {
-            console.log("No user found, redirecting to home");
-            navigate("/", { replace: true });
-          }
+          console.log("No session found in callback, redirecting to home");
+          navigate("/", { replace: true });
         }
       } catch (error) {
-        console.error("Hiba az auth callback során:", error);
+        console.error("Exception in auth callback:", error);
         navigate("/", { replace: true });
       }
     };
 
-    // Longer delay to ensure all auth processing is complete
-    const timer = setTimeout(handleAuthCallback, 1000);
+    // Process callback after a short delay
+    const timer = setTimeout(handleAuthCallback, 800);
 
     return () => clearTimeout(timer);
   }, [navigate]);

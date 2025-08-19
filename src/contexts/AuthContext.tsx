@@ -82,13 +82,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const errorDescription = urlParams.get("error_description");
 
         if (error) {
-          console.log(
-            "Auth error detected in URL, clearing session:",
-            error,
-            errorDescription
-          );
-          await supabase.auth.signOut({ scope: "local" });
-          // Clean URL
+          console.log("Auth error detected in URL:", error, errorDescription);
+
+          // Only clear session for specific errors, not all errors
+          if (error === "access_denied" || error === "unauthorized_client") {
+            console.log("Clearing session due to serious auth error");
+            await supabase.auth.signOut({ scope: "local" });
+          }
+
+          // Clean URL regardless
           window.history.replaceState(
             {},
             document.title,
@@ -105,8 +107,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (sessionError) {
           console.error("Session init error:", sessionError);
-          // If session is corrupted, clear it
-          await supabase.auth.signOut({ scope: "local" });
+          // Only clear session if it's really corrupted
+          if (
+            sessionError.message?.includes("invalid") ||
+            sessionError.message?.includes("expired")
+          ) {
+            console.log("Clearing corrupted session");
+            await supabase.auth.signOut({ scope: "local" });
+          }
           setLoading(false);
           return;
         }
@@ -198,10 +206,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             access_type: "offline",
             prompt: "consent select_account", // Force account selection
             include_granted_scopes: "true",
-            // Add random state to prevent caching
-            state: `google_${Date.now()}_${Math.random()
-              .toString(36)
-              .substr(2, 9)}`,
           },
           skipBrowserRedirect: false,
         },
@@ -223,7 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("Initiating GitHub sign in...");
 
-      // GitHub sign in with fresh state
+      // GitHub sign in
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
@@ -231,10 +235,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           queryParams: {
             scope: "read:user user:email",
             allow_signup: "true",
-            // Add random state to prevent caching
-            state: `github_${Date.now()}_${Math.random()
-              .toString(36)
-              .substr(2, 9)}`,
           },
           skipBrowserRedirect: false,
         },
