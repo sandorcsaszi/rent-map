@@ -1483,111 +1483,116 @@ export default function Sidebar({
         )}
 
         {/* Header */}
-      <div
-        style={{
-          padding: "24px 20px 0px",
-          background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
-          color: colors.white,
-        }}
-      >
-        <h2
+        <div
           style={{
-            fontSize: "24px",
-            fontWeight: "700",
-            margin: "0 0 16px 0",
+            padding: "24px 20px 0px",
+            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
+            color: colors.white,
           }}
         >
-          🗺️ Térkép Helyek
-        </h2>
-
-        {/* Tab Navigation */}
-        <div style={{ display: "flex", gap: "4px", marginBottom: "0" }}>
-          <button
-            onClick={() => setActiveTab("search")}
+          <h2
             style={{
-              flex: 1,
-              padding: "12px 8px",
-              backgroundColor:
-                activeTab === "search" ? colors.white : "transparent",
-              color: activeTab === "search" ? colors.primary : colors.white,
-              border: "none",
-              borderRadius: "8px 8px 0 0",
-              fontSize: "13px",
-              fontWeight: "600",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              position: "relative",
+              fontSize: "24px",
+              fontWeight: "700",
+              margin: "0 0 16px 0",
             }}
           >
-            🔍 Keresés
-            {hasActiveFilters && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "6px",
-                  right: "6px",
-                  width: "8px",
-                  height: "8px",
-                  backgroundColor: colors.danger,
-                  borderRadius: "50%",
-                }}
-              />
-            )}
-          </button>
+            🗺️ Térkép Helyek
+          </h2>
 
-          <button
-            onClick={() => setActiveTab("add")}
-            style={{
-              flex: 1,
-              padding: "12px 8px",
-              backgroundColor:
-                activeTab === "add" ? colors.white : "transparent",
-              color: activeTab === "add" ? colors.primary : colors.white,
-              border: "none",
-              borderRadius: "8px 8px 0 0",
-              fontSize: "13px",
-              fontWeight: "600",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-          >
-            ➕ Hozzáadás
-          </button>
-        </div>
-      </div>
+          {/* Tab Navigation */}
+          <div style={{ display: "flex", gap: "4px", marginBottom: "0" }}>
+            <button
+              onClick={() => setActiveTab("search")}
+              style={{
+                flex: 1,
+                padding: "12px 8px",
+                backgroundColor:
+                  activeTab === "search" ? colors.white : "transparent",
+                color: activeTab === "search" ? colors.primary : colors.white,
+                border: "none",
+                borderRadius: "8px 8px 0 0",
+                fontSize: "13px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                position: "relative",
+              }}
+            >
+              🔍 Keresés
+              {hasActiveFilters && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "6px",
+                    right: "6px",
+                    width: "8px",
+                    height: "8px",
+                    backgroundColor: colors.danger,
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
+            </button>
 
-      {/* Tab Content */}
-      <div
-        style={{
-          flex: "1",
-          overflowY: "auto",
-          padding: "20px",
-          paddingBottom: user ? "80px" : "20px", // Extra padding ha van bejelentkezett user
-          overflowX: "hidden",
-          backgroundColor: colors.white,
-        }}
-      >
-        {activeTab === "search" && (
-          <div>
-            <SearchBar
-              searchTerm={searchTerm}
-              onSearchChange={onSearchChange}
-            />
-            <FilterPanel filters={filters} onFiltersChange={onFiltersChange} />
-            <PlacesList
-              places={filteredPlaces}
-              selectedPlace={selectedPlace}
-              onSelectPlace={onSelectPlace}
-              onDeletePlace={onDeletePlace}
-            />
+            <button
+              onClick={() => setActiveTab("add")}
+              style={{
+                flex: 1,
+                padding: "12px 8px",
+                backgroundColor:
+                  activeTab === "add" ? colors.white : "transparent",
+                color: activeTab === "add" ? colors.primary : colors.white,
+                border: "none",
+                borderRadius: "8px 8px 0 0",
+                fontSize: "13px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              ➕ Hozzáadás
+            </button>
           </div>
-        )}
+        </div>
 
-        {activeTab === "add" && <SidebarAddForm onAddByAddress={onAddPlace} />}
-      </div>
+        {/* Tab Content */}
+        <div
+          style={{
+            flex: "1",
+            overflowY: "auto",
+            padding: "20px",
+            paddingBottom: user ? "80px" : "20px", // Extra padding ha van bejelentkezett user
+            overflowX: "hidden",
+            backgroundColor: colors.white,
+          }}
+        >
+          {activeTab === "search" && (
+            <div>
+              <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={onSearchChange}
+              />
+              <FilterPanel
+                filters={filters}
+                onFiltersChange={onFiltersChange}
+              />
+              <PlacesList
+                places={filteredPlaces}
+                selectedPlace={selectedPlace}
+                onSelectPlace={onSelectPlace}
+                onDeletePlace={onDeletePlace}
+              />
+            </div>
+          )}
 
-      {/* Profile Bar */}
-      <ProfileBar />
+          {activeTab === "add" && (
+            <SidebarAddForm onAddByAddress={onAddPlace} />
+          )}
+        </div>
+
+        {/* Profile Bar */}
+        <ProfileBar />
       </div>
     </>
   );
