@@ -46,25 +46,43 @@ export default function PlaceForm({
   );
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        left: "50%",
-        top: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 1100,
-        width: "min(360px, calc(100vw - 40px))",
-        maxHeight: "calc(100vh - 80px)",
-        borderRadius: "16px",
-        background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 50%, ${colors.white} 100%)`,
-        padding: "min(24px, 3vh)",
-        boxShadow: `0 20px 40px ${colors.primary}20, 0 8px 24px ${colors.primary}15`,
-        border: `3px solid ${colors.primary}40`,
-        animation: "fadeIn 0.3s ease-out",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <>
+      {/* Background overlay */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 1099,
+          animation: "fadeIn 0.3s ease-out",
+        }}
+        onClick={onCancel}
+        data-testid="place-form-overlay"
+      />
+
+      <div
+        style={{
+          position: "fixed",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1100,
+          width: "min(360px, calc(100vw - 40px))",
+          maxHeight: "calc(100vh - 80px)",
+          borderRadius: "16px",
+          background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 50%, ${colors.white} 100%)`,
+          padding: "min(24px, 3vh)",
+          boxShadow: `0 20px 40px ${colors.primary}20, 0 8px 24px ${colors.primary}15`,
+          border: `3px solid ${colors.primary}40`,
+          animation: "fadeIn 0.3s ease-out",
+          display: "flex",
+          flexDirection: "column",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
       <h2
         style={{
           fontSize: "min(20px, 4.5vw)",
@@ -493,6 +511,7 @@ export default function PlaceForm({
           </button>
         </div>
       </form>
-    </div>
+      </div>
+    </>
   );
 }
