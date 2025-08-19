@@ -132,8 +132,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+        // Explicitly clear the state after successful signout
+        setUser(null);
+        setProfile(null);
+      }
+      return { error };
+    } catch (err) {
+      console.error('Kijelentkezési hiba:', err);
+      return { error: err as AuthError };
+    }
   };
 
   const value = {

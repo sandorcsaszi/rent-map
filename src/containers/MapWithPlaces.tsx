@@ -179,11 +179,11 @@ export default function MapWithPlaces() {
     }
   };
 
-  const handleDeletePlaceFromSidebar = async (id: number) => {
+  const handleDeletePlaceFromSidebar = async (id: string | number) => {
     if (!user) return;
 
     try {
-      // Convert number to string if needed
+      // Convert to string if needed
       const placeId = typeof id === "string" ? id : id.toString();
       await deletePlace(placeId);
     } catch (error) {

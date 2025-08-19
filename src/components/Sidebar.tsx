@@ -14,7 +14,7 @@ interface SidebarProps {
   onSelectPlace: (place: Place) => void;
   onAddPlace: (place: Omit<Place, "id">) => void;
   onUpdatePlace: (place: Place) => void;
-  onDeletePlace: (id: number) => void;
+  onDeletePlace: (id: string | number) => void;
   searchTerm: string;
   onSearchChange: (term: string) => void;
   filters: FilterCriteria;
@@ -1046,7 +1046,7 @@ function PlacesList({
   places: Place[];
   selectedPlace: Place | null;
   onSelectPlace: (place: Place) => void;
-  onDeletePlace: (id: number) => void;
+  onDeletePlace: (id: string | number) => void;
 }) {
   if (places.length === 0) {
     return (
@@ -1161,7 +1161,7 @@ function PlacesList({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDeletePlace(parseInt(place.id) || 0);
+                  onDeletePlace(place.id);
                 }}
                 style={{
                   background: "none",
