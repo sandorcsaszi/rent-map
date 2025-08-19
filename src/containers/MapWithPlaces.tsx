@@ -357,25 +357,22 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative transition-all duration-300">
-          {/* DEBUG: Ha nincs burger menu, megjelenítjük az állapotot */}
-          {(!user || !sidebarCollapsed) && (
-            <div
-              style={{
-                position: "fixed",
-                top: "10px",
-                right: "10px",
-                background: "rgba(0,0,0,0.7)",
-                color: "white",
-                padding: "8px",
-                borderRadius: "4px",
-                fontSize: "12px",
-                zIndex: 9999,
-              }}
-            >
-              User: {user ? "✓" : "✗"} | Collapsed:{" "}
-              {sidebarCollapsed ? "✓" : "✗"}
-            </div>
-          )}
+          {/* DEBUG: Mindig megjelenítjük az állapotot */}
+          <div
+            style={{
+              position: "fixed",
+              top: "10px",
+              right: "10px",
+              background: "rgba(0,0,0,0.7)",
+              color: "white",
+              padding: "8px",
+              borderRadius: "4px",
+              fontSize: "12px",
+              zIndex: 9999,
+            }}
+          >
+            User: {user ? "✓" : "✗"} | Collapsed: {sidebarCollapsed ? "✓" : "✗"}
+          </div>
 
           {/* Burger Menu Button - csak bejelentkezés után és ha sidebar becsukva */}
           {user && sidebarCollapsed && (

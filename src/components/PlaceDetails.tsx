@@ -26,326 +26,345 @@ export default function PlaceDetails({
   onDelete,
 }: PlaceDetailsProps) {
   return (
-    <div
-      style={{
-        position: "absolute",
-        right: "420px",
-        top: "32px",
-        zIndex: 1100,
-        width: "380px",
-        maxWidth: "calc(100vw - 440px)",
-        borderRadius: "20px",
-        background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 50%, ${colors.white} 100%)`,
-        padding: "32px",
-        boxShadow: `0 20px 40px ${colors.primary}20, 0 8px 24px ${colors.primary}15`,
-        border: `3px solid ${colors.primary}40`,
-        display: "flex",
-        flexDirection: "column",
-        gap: "8px",
-      }}
-    >
-      <button
+    <>
+      {/* Background overlay */}
+      <div
         style={{
-          position: "absolute",
-          top: "16px",
-          right: "16px",
-          background: "none",
-          border: "none",
-          color: colors.primary,
-          fontSize: "20px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          padding: "4px",
-          borderRadius: "8px",
-          transition: "all 0.2s",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          zIndex: 1099,
+          animation: "fadeIn 0.3s ease-out",
         }}
         onClick={onClose}
-        onMouseEnter={(e) => {
-          const target = e.target as HTMLButtonElement;
-          target.style.color = colors.danger;
-          target.style.backgroundColor = `${colors.danger}15`;
-        }}
-        onMouseLeave={(e) => {
-          const target = e.target as HTMLButtonElement;
-          target.style.color = colors.primary;
-          target.style.backgroundColor = "transparent";
-        }}
-        aria-label="Bezárás"
-      >
-        ❌
-      </button>
+        data-testid="place-details-overlay"
+      />
 
-      <h2
+      <div
         style={{
-          fontSize: "28px",
-          fontWeight: "800",
-          marginBottom: "8px",
-          color: colors.secondary,
-          borderBottom: `2px solid ${colors.primary}`,
-          paddingBottom: "8px",
+          position: "absolute",
+          right: "420px",
+          top: "32px",
+          zIndex: 1100,
+          width: "380px",
+          maxWidth: "calc(100vw - 440px)",
+          borderRadius: "20px",
+          background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 50%, ${colors.white} 100%)`,
+          padding: "32px",
+          boxShadow: `0 20px 40px ${colors.primary}20, 0 8px 24px ${colors.primary}15`,
+          border: `3px solid ${colors.primary}40`,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        {place.title}
-      </h2>
-
-      {/* Részletes költségek megjelenítése */}
-      {(place.rentPrice || place.utilityCost || place.commonCost) && (
-        <div
+        <button
           style={{
-            marginBottom: "12px",
-            padding: "12px",
-            backgroundColor: colors.background,
+            position: "absolute",
+            top: "16px",
+            right: "16px",
+            background: "none",
+            border: "none",
+            color: colors.primary,
+            fontSize: "20px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            padding: "4px",
             borderRadius: "8px",
-            border: `1px solid ${colors.lightGray}`,
+            transition: "all 0.2s",
+          }}
+          onClick={onClose}
+          onMouseEnter={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.color = colors.danger;
+            target.style.backgroundColor = `${colors.danger}15`;
+          }}
+          onMouseLeave={(e) => {
+            const target = e.target as HTMLButtonElement;
+            target.style.color = colors.primary;
+            target.style.backgroundColor = "transparent";
+          }}
+          aria-label="Bezárás"
+        >
+          ❌
+        </button>
+
+        <h2
+          style={{
+            fontSize: "28px",
+            fontWeight: "800",
+            marginBottom: "8px",
+            color: colors.secondary,
+            borderBottom: `2px solid ${colors.primary}`,
+            paddingBottom: "8px",
           }}
         >
+          {place.title}
+        </h2>
+
+        {/* Részletes költségek megjelenítése */}
+        {(place.rentPrice || place.utilityCost || place.commonCost) && (
           <div
             style={{
-              fontSize: "14px",
-              fontWeight: "600",
-              color: colors.secondary,
-              marginBottom: "8px",
+              marginBottom: "12px",
+              padding: "12px",
+              backgroundColor: colors.background,
+              borderRadius: "8px",
+              border: `1px solid ${colors.lightGray}`,
             }}
           >
-            📊 Költségek részletesen:
-          </div>
-          <div style={{ fontSize: "13px", color: colors.gray }}>
-            {place.rentPrice && (
-              <div style={{ marginBottom: "2px" }}>
-                🏠 Bérleti díj:{" "}
-                <strong>
-                  {(place.rentPrice / 1000).toFixed(1)} ezer Ft/hó
-                </strong>
-              </div>
-            )}
-            {place.utilityCost && (
-              <div style={{ marginBottom: "2px" }}>
-                ⚡ Rezsi:{" "}
-                <strong>
-                  {(place.utilityCost / 1000).toFixed(0)} ezer Ft/hó
-                </strong>
-              </div>
-            )}
-            {place.commonCost && (
-              <div style={{ marginBottom: "2px" }}>
-                🏢 Közös költség:{" "}
-                <strong>
-                  {(place.commonCost / 1000).toFixed(0)} ezer Ft/hó
-                </strong>
-              </div>
-            )}
-            <hr
+            <div
               style={{
-                margin: "6px 0",
-                border: `1px solid ${colors.lightGray}`,
+                fontSize: "14px",
+                fontWeight: "600",
+                color: colors.secondary,
+                marginBottom: "8px",
               }}
-            />
-            <div style={{ fontWeight: "600", color: colors.secondary }}>
-              💰 Összesen:{" "}
-              <strong>
-                {(
-                  ((place.rentPrice || 0) +
-                    (place.utilityCost || 0) +
-                    (place.commonCost || 0)) /
-                  1000
-                ).toFixed(0)}{" "}
-                ezer Ft/hó
-              </strong>
+            >
+              📊 Költségek részletesen:
+            </div>
+            <div style={{ fontSize: "13px", color: colors.gray }}>
+              {place.rentPrice && (
+                <div style={{ marginBottom: "2px" }}>
+                  🏠 Bérleti díj:{" "}
+                  <strong>
+                    {(place.rentPrice / 1000).toFixed(1)} ezer Ft/hó
+                  </strong>
+                </div>
+              )}
+              {place.utilityCost && (
+                <div style={{ marginBottom: "2px" }}>
+                  ⚡ Rezsi:{" "}
+                  <strong>
+                    {(place.utilityCost / 1000).toFixed(0)} ezer Ft/hó
+                  </strong>
+                </div>
+              )}
+              {place.commonCost && (
+                <div style={{ marginBottom: "2px" }}>
+                  🏢 Közös költség:{" "}
+                  <strong>
+                    {(place.commonCost / 1000).toFixed(0)} ezer Ft/hó
+                  </strong>
+                </div>
+              )}
+              <hr
+                style={{
+                  margin: "6px 0",
+                  border: `1px solid ${colors.lightGray}`,
+                }}
+              />
+              <div style={{ fontWeight: "600", color: colors.secondary }}>
+                💰 Összesen:{" "}
+                <strong>
+                  {(
+                    ((place.rentPrice || 0) +
+                      (place.utilityCost || 0) +
+                      (place.commonCost || 0)) /
+                    1000
+                  ).toFixed(0)}{" "}
+                  ezer Ft/hó
+                </strong>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Ingatlan részletek */}
-      {(place.floor !== undefined || place.hasElevator !== undefined) && (
+        {/* Ingatlan részletek */}
+        {(place.floor !== undefined || place.hasElevator !== undefined) && (
+          <div
+            style={{
+              marginBottom: "12px",
+              padding: "12px",
+              backgroundColor: colors.background,
+              borderRadius: "8px",
+              border: `1px solid ${colors.lightGray}`,
+            }}
+          >
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: "600",
+                color: colors.secondary,
+                marginBottom: "8px",
+              }}
+            >
+              🏢 Ingatlan adatok:
+            </div>
+            <div style={{ fontSize: "13px", color: colors.gray }}>
+              {place.floor !== undefined && (
+                <div style={{ marginBottom: "2px" }}>
+                  📍 Emelet: <strong>{place.floor}. emelet</strong>
+                </div>
+              )}
+              {place.hasElevator !== undefined && (
+                <div style={{ marginBottom: "2px" }}>
+                  🛗 Lift:{" "}
+                  <strong
+                    style={{
+                      color: place.hasElevator ? colors.success : colors.danger,
+                    }}
+                  >
+                    {place.hasElevator
+                      ? "Van lift az épületben"
+                      : "Nincs lift az épületben"}
+                  </strong>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div
           style={{
             marginBottom: "12px",
-            padding: "12px",
-            backgroundColor: colors.background,
-            borderRadius: "8px",
-            border: `1px solid ${colors.lightGray}`,
+            color: colors.gray,
+            whiteSpace: "pre-line",
+            fontSize: "16px",
+            lineHeight: "1.5",
           }}
         >
-          <div
-            style={{
-              fontSize: "14px",
-              fontWeight: "600",
-              color: colors.secondary,
-              marginBottom: "8px",
-            }}
-          >
-            🏢 Ingatlan adatok:
-          </div>
-          <div style={{ fontSize: "13px", color: colors.gray }}>
-            {place.floor !== undefined && (
-              <div style={{ marginBottom: "2px" }}>
-                📍 Emelet: <strong>{place.floor}. emelet</strong>
-              </div>
-            )}
-            {place.hasElevator !== undefined && (
-              <div style={{ marginBottom: "2px" }}>
-                🛗 Lift:{" "}
-                <strong
-                  style={{
-                    color: place.hasElevator ? colors.success : colors.danger,
-                  }}
-                >
-                  {place.hasElevator
-                    ? "Van lift az épületben"
-                    : "Nincs lift az épületben"}
-                </strong>
-              </div>
-            )}
-          </div>
+          {place.description}
         </div>
-      )}
 
-      <div
-        style={{
-          marginBottom: "12px",
-          color: colors.gray,
-          whiteSpace: "pre-line",
-          fontSize: "16px",
-          lineHeight: "1.5",
-        }}
-      >
-        {place.description}
-      </div>
+        {place.link && (
+          <div style={{ marginBottom: "12px" }}>
+            <a
+              href={
+                place.link.startsWith("http://") ||
+                place.link.startsWith("https://")
+                  ? place.link
+                  : `https://${place.link}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                color: colors.primary,
+                textDecoration: "none",
+                fontSize: "14px",
+                fontWeight: "600",
+                padding: "8px 12px",
+                border: `2px solid ${colors.primary}`,
+                borderRadius: "8px",
+                background: `${colors.primary}10`,
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLAnchorElement;
+                target.style.background = colors.primary;
+                target.style.color = colors.white;
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLAnchorElement;
+                target.style.background = `${colors.primary}10`;
+                target.style.color = colors.primary;
+              }}
+            >
+              🔗 Weboldal megtekintése
+            </a>
+          </div>
+        )}
 
-      {place.link && (
-        <div style={{ marginBottom: "12px" }}>
-          <a
-            href={
-              place.link.startsWith("http://") ||
-              place.link.startsWith("https://")
-                ? place.link
-                : `https://${place.link}`
-            }
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              color: colors.primary,
-              textDecoration: "none",
-              fontSize: "14px",
-              fontWeight: "600",
-              padding: "8px 12px",
-              border: `2px solid ${colors.primary}`,
-              borderRadius: "8px",
-              background: `${colors.primary}10`,
-              transition: "all 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              const target = e.target as HTMLAnchorElement;
-              target.style.background = colors.primary;
-              target.style.color = colors.white;
-            }}
-            onMouseLeave={(e) => {
-              const target = e.target as HTMLAnchorElement;
-              target.style.background = `${colors.primary}10`;
-              target.style.color = colors.primary;
-            }}
-          >
-            🔗 Weboldal megtekintése
-          </a>
-        </div>
-      )}
-
-      <div
-        style={{
-          fontSize: "12px",
-          color: colors.gray,
-          marginBottom: "8px",
-        }}
-      >
-        📅 Létrehozva: {place.createdAt}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "16px",
-          marginTop: "8px",
-        }}
-      >
         <div
           style={{
             fontSize: "12px",
             color: colors.gray,
+            marginBottom: "8px",
           }}
         >
-          📍 Koordináták: {(place.position?.[0] || place.lat).toFixed(5)},{" "}
-          {(place.position?.[1] || place.lng).toFixed(5)}
+          📅 Létrehozva: {place.createdAt}
         </div>
 
         <div
           style={{
-            marginLeft: "auto",
             display: "flex",
-            gap: "8px",
+            alignItems: "center",
+            gap: "16px",
+            marginTop: "8px",
           }}
         >
-          <button
+          <div
             style={{
-              background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
-              color: colors.white,
-              padding: "10px 16px",
-              borderRadius: "10px",
-              fontSize: "14px",
-              fontWeight: "600",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              boxShadow: `0 4px 12px ${colors.primary}30`,
-            }}
-            onClick={onEdit}
-            onMouseEnter={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = "translateY(-2px)";
-              target.style.boxShadow = `0 6px 20px ${colors.primary}40`;
-            }}
-            onMouseLeave={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = "translateY(0)";
-              target.style.boxShadow = `0 4px 12px ${colors.primary}30`;
+              fontSize: "12px",
+              color: colors.gray,
             }}
           >
-            ✏️ Szerkesztés
-          </button>
+            📍 Koordináták: {(place.position?.[0] || place.lat).toFixed(5)},{" "}
+            {(place.position?.[1] || place.lng).toFixed(5)}
+          </div>
 
-          <button
+          <div
             style={{
-              background: `linear-gradient(135deg, ${colors.danger} 0%, #dc2626 100%)`,
-              color: colors.white,
-              padding: "10px 16px",
-              borderRadius: "10px",
-              fontSize: "14px",
-              fontWeight: "600",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              boxShadow: `0 4px 12px ${colors.danger}30`,
-            }}
-            onClick={onDelete}
-            onMouseEnter={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = "translateY(-2px)";
-              target.style.boxShadow = `0 6px 20px ${colors.danger}40`;
-            }}
-            onMouseLeave={(e) => {
-              const target = e.target as HTMLButtonElement;
-              target.style.transform = "translateY(0)";
-              target.style.boxShadow = `0 4px 12px ${colors.danger}30`;
+              marginLeft: "auto",
+              display: "flex",
+              gap: "8px",
             }}
           >
-            🗑️ Törlés
-          </button>
+            <button
+              style={{
+                background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
+                color: colors.white,
+                padding: "10px 16px",
+                borderRadius: "10px",
+                fontSize: "14px",
+                fontWeight: "600",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                boxShadow: `0 4px 12px ${colors.primary}30`,
+              }}
+              onClick={onEdit}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.transform = "translateY(-2px)";
+                target.style.boxShadow = `0 6px 20px ${colors.primary}40`;
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.transform = "translateY(0)";
+                target.style.boxShadow = `0 4px 12px ${colors.primary}30`;
+              }}
+            >
+              ✏️ Szerkesztés
+            </button>
+
+            <button
+              style={{
+                background: `linear-gradient(135deg, ${colors.danger} 0%, #dc2626 100%)`,
+                color: colors.white,
+                padding: "10px 16px",
+                borderRadius: "10px",
+                fontSize: "14px",
+                fontWeight: "600",
+                border: "none",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                boxShadow: `0 4px 12px ${colors.danger}30`,
+              }}
+              onClick={onDelete}
+              onMouseEnter={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.transform = "translateY(-2px)";
+                target.style.boxShadow = `0 6px 20px ${colors.danger}40`;
+              }}
+              onMouseLeave={(e) => {
+                const target = e.target as HTMLButtonElement;
+                target.style.transform = "translateY(0)";
+                target.style.boxShadow = `0 4px 12px ${colors.danger}30`;
+              }}
+            >
+              🗑️ Törlés
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
