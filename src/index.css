@@ -116,3 +116,13 @@ html, body, #root {
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: rgba(56, 189, 248, 0.8);
 }
+
+/* Fade in animation for overlays and modals */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
