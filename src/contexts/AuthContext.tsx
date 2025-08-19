@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const newProfile = {
         id: user.id,
-        email: user.email || '',
+        username: user.email?.split('@')[0] || 'user',
         full_name: user.user_metadata?.full_name || 
                    user.user_metadata?.name || 
                    user.email?.split('@')[0] || 
