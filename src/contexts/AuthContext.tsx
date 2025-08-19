@@ -71,22 +71,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+    
     // Jelenlegi session lekérése
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
-      if (currentUser) {
-        ensureUserProfile(currentUser).then((userProfile) => {
-          setProfile(userProfile);
+    const initSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        if (error) {
+          console.error("Session init error:", error);
           setLoading(false);
-        });
-      } else {
-        setProfile(null);
-        setLoading(false);
+          return;
+        }
+        
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+
+        // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
+        if (currentUser) {
+          const userProfile = await ensureUserProfile(currentUser);
+          if (mounted) {
+            setProfile(userProfile);
+          }
+        } else {
+          setProfile(null);
+        }
+        
+        if (mounted) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Session initialization error:", error);
+        if (mounted) {
+          setLoading(false);
+        }
       }
-    });
+    };
+    
+    initSession();
 
     // Auth változások figyelése
     const {
@@ -123,17 +147,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signInWithGoogle = async () => {
-    setLoading(true);
     try {
+      console.log("Initiating Google sign in...");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          // Session kiterjesztése 1 hétre
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -142,26 +168,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        setLoading(false);
+        console.error("Google OAuth error:", error);
         return { error };
       }
 
       return { error: null };
     } catch (err) {
-      setLoading(false);
       console.error("Google bejelentkezési hiba:", err);
       return { error: err as AuthError };
     }
   };
 
   const signInWithGitHub = async () => {
-    setLoading(true);
     try {
+      console.log("Initiating GitHub sign in...");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
-          // Session kiterjesztése 1 hétre
           queryParams: {
             scope: "read:user user:email",
           },
@@ -169,13 +193,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        setLoading(false);
+        console.error("GitHub OAuth error:", error);
         return { error };
       }
 
       return { error: null };
     } catch (err) {
-      setLoading(false);
       console.error("GitHub bejelentkezési hiba:", err);
       return { error: err as AuthError };
     }
@@ -183,45 +206,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     console.log("Kijelentkezés kezdeményezése...");
-    setLoading(true);
-
+    
     try {
-      // Clear local state immediately
-      setUser(null);
-      setProfile(null);
-
-      // Sign out from Supabase
+      // Sign out from Supabase first
       const { error } = await supabase.auth.signOut();
-
+      
       if (error) {
         console.error("Supabase kijelentkezési hiba:", error);
       } else {
         console.log("Sikeres kijelentkezés");
       }
-
-      // Clear any local storage data
-      localStorage.removeItem("supabase.auth.token");
-      sessionStorage.removeItem("supabase.auth.token");
-
-      // Force reload to ensure clean state
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-
+      
+      // Clear local state
+      setUser(null);
+      setProfile(null);
+      setLoading(false);
+      
       return { error };
     } catch (err) {
       console.error("Kijelentkezési kivétel:", err);
-
-      // Even if error, clear local state and reload
+      
+      // Even if error, clear local state
       setUser(null);
       setProfile(null);
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-
-      return { error: err as AuthError };
-    } finally {
       setLoading(false);
+      
+      return { error: err as AuthError };
     }
   };
 

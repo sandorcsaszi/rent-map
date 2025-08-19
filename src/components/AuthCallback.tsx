@@ -9,25 +9,22 @@ export default function AuthCallback() {
     const handleAuthCallback = async () => {
       try {
         console.log("Processing auth callback...");
-
-        // Hash fragment kezelése OAuth callback után
-        const { data, error } = await supabase.auth.getSession();
-
+        
+        // Exchange the code for a session
+        const { data, error } = await supabase.auth.getUser();
+        
         if (error) {
           console.error("Auth callback hiba:", error);
-          // Vissza a főoldalra hiba esetén
           navigate("/", { replace: true });
           return;
         }
 
-        if (data.session) {
-          console.log("Session found, user authenticated");
-          // Kis késleltetés, hogy az auth context frissülhessen
-          setTimeout(() => {
-            navigate("/", { replace: true });
-          }, 1000);
+        if (data.user) {
+          console.log("User authenticated successfully:", data.user.id);
+          // Redirect to home page
+          navigate("/", { replace: true });
         } else {
-          console.log("No session found");
+          console.log("No user found after callback");
           navigate("/", { replace: true });
         }
       } catch (error) {
@@ -36,7 +33,10 @@ export default function AuthCallback() {
       }
     };
 
-    handleAuthCallback();
+    // Small delay to ensure URL parameters are processed
+    const timer = setTimeout(handleAuthCallback, 500);
+    
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   return (
