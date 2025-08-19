@@ -112,6 +112,9 @@ export default function MapWithPlaces() {
         rent_price: placeData.rentPrice || 0,
         common_cost: placeData.commonCost || 0,
         utility_cost: placeData.utilityCost || 0,
+        link: placeData.link || null,
+        floor: placeData.floor || null,
+        has_elevator: placeData.hasElevator || null,
       };
 
       console.log("Creating place:", newPlace);
@@ -356,26 +359,26 @@ export default function MapWithPlaces() {
         />
 
         <div className="flex-1 relative transition-all duration-300">
-          {/* Burger Menu Button - mindig látható amikor becsukott a sidebar */}
+          {/* Burger Menu Button - NAGY PIROS GOMB */}
           {user && sidebarCollapsed && (
             <button
               onClick={() => {
                 console.log("Burger menu clicked! Opening sidebar...");
                 setSidebarCollapsed(false);
               }}
-              className="fixed top-4 left-4 z-[1001] w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              className="fixed top-4 left-4 z-[1001] w-20 h-20 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               style={{
-                borderRadius: "8px",
-                boxShadow: "0 8px 32px rgba(59, 130, 246, 0.4)",
-                border: "2px solid rgba(255, 255, 255, 0.2)",
+                borderRadius: "12px",
+                boxShadow: "0 8px 32px rgba(220, 38, 38, 0.6)",
+                border: "3px solid rgba(255, 255, 255, 0.3)",
               }}
               title="Oldalsáv megnyitása"
             >
-              {/* Hamburger icon - nagyobb méretű */}
-              <div className="flex flex-col items-center justify-center space-y-1.5">
-                <div className="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></div>
-                <div className="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></div>
-                <div className="w-6 h-0.5 bg-white rounded-full transition-all duration-300"></div>
+              {/* Hamburger icon - még nagyobb */}
+              <div className="flex flex-col items-center justify-center space-y-2">
+                <div className="w-8 h-1 bg-white rounded-full transition-all duration-300"></div>
+                <div className="w-8 h-1 bg-white rounded-full transition-all duration-300"></div>
+                <div className="w-8 h-1 bg-white rounded-full transition-all duration-300"></div>
               </div>
             </button>
           )}
