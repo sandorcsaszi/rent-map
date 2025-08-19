@@ -12,15 +12,6 @@ export default function MapWithPlaces() {
   const { user, loading: authLoading } = useAuth();
   const { places, createPlace, updatePlace, deletePlace } = usePlaces();
 
-  // Debug log hozzáadása
-  console.log("🗺️ MapWithPlaces render:", {
-    hasUser: !!user,
-    authLoading,
-    userEmail: user?.email,
-    userId: user?.id,
-    placesCount: places.length,
-  });
-
   const [addingPosition, setAddingPosition] = useState<[number, number] | null>(
     null
   );
@@ -247,27 +238,45 @@ export default function MapWithPlaces() {
     );
   });
 
-  // Loading állapot
+  // Loading állapot - animált betöltés
   if (authLoading) {
-    console.log("⏳ Still loading auth, showing loading screen");
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Betöltés...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center space-y-6">
+          {/* Pulzáló logo/ikon */}
+          <div className="relative">
+            <div className="w-16 h-16 bg-blue-500 rounded-full animate-pulse mx-auto"></div>
+            <div className="absolute inset-0 w-16 h-16 bg-blue-300 rounded-full animate-ping mx-auto"></div>
+          </div>
+
+          {/* Forgó betöltő */}
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+          </div>
+
+          {/* Betöltési szöveg animációval */}
+          <div className="space-y-2">
+            <p className="text-xl font-semibold text-gray-700 animate-pulse">
+              Bejelentkezés...
+            </p>
+            <div className="flex justify-center space-x-1">
+              <div
+                className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              ></div>
+              <div
+                className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              ></div>
+            </div>
+          </div>
         </div>
       </div>
     );
-  }
-
-  // Ha nincs user, de nem loading sem
-  if (!user && !authLoading) {
-    console.log("❌ No user and not loading - should show login modal");
-  }
-
-  // Ha van user és nincs loading
-  if (user && !authLoading) {
-    console.log("✅ User found and not loading - should show app");
   }
 
   return (

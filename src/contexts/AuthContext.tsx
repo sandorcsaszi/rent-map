@@ -181,7 +181,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log("🔄 Auth state change:", event, {
         hasSession: !!session,
         userId: session?.user?.id,
-        userEmail: session?.user?.email
+        userEmail: session?.user?.email,
       });
 
       const currentUser = session?.user ?? null;
@@ -336,14 +336,5 @@ export function useAuth() {
   if (context === undefined) {
     throw new Error("useAuth csak AuthProvider-en belül használható");
   }
-  
-  // Debug log minden useAuth hívásnál
-  console.log("🔑 useAuth called:", {
-    hasUser: !!context.user,
-    userEmail: context.user?.email,
-    loading: context.loading,
-    hasProfile: !!context.profile
-  });
-  
   return context;
 }
