@@ -1468,15 +1468,17 @@ export default function Sidebar({
           }}
           className="px-5 pt-6 md:px-5 md:pt-6 sm:px-4 sm:pt-4 relative"
         >
-          {/* Modern Close Button - minden platformon */}
+          {/* Piros X gomb - szögletes sarkokkal */}
           {onToggleCollapse && (
             <button
               onClick={onToggleCollapse}
-              className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm rounded-full flex items-center justify-center text-white transition-all duration-200 hover:scale-110"
+              className="absolute top-4 right-4 w-10 h-10 bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-all duration-200 hover:scale-110"
               style={{
                 fontSize: "18px",
                 fontWeight: "bold",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                borderRadius: "4px", // Szögletes sarkok
+                boxShadow: "0 4px 12px rgba(239, 68, 68, 0.3)",
+                border: "2px solid rgba(255, 255, 255, 0.2)",
               }}
               title="Oldalsáv becsukása"
             >
