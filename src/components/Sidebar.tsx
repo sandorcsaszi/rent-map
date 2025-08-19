@@ -19,6 +19,8 @@ interface SidebarProps {
   onSearchChange: (term: string) => void;
   filters: FilterCriteria;
   onFiltersChange: (filters: FilterCriteria) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 // Blue-white theme colors
@@ -1244,6 +1246,8 @@ export default function Sidebar({
   onSearchChange,
   filters,
   onFiltersChange,
+  isCollapsed = false,
+  onToggleCollapse,
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<"search" | "add">("search");
   const { user, signOut } = useAuth();
@@ -1427,128 +1431,202 @@ export default function Sidebar({
     filters.hasElevator !== null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "0",
-        right: "0",
-        width: "380px",
-        height: "100vh",
-        background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
-        borderLeft: `3px solid ${colors.primary}`,
-        boxShadow: `-4px 0 20px ${colors.primary}15`,
-        zIndex: 1000,
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      {/* Header */}
+    <>
+      {/* Mobile overlay when sidebar is open */}
+      {!isCollapsed && onToggleCollapse && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-[999]"
+          onClick={onToggleCollapse}
+        />
+      )}
+
       <div
         style={{
-          padding: "24px 20px 0px",
-          background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
-          color: colors.white,
+          position: "fixed",
+          top: "0",
+          right: isCollapsed ? "-100%" : "0",
+          width: "100%",
+          maxWidth: "380px",
+          height: "100vh",
+          background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
+          borderLeft: `3px solid ${colors.primary}`,
+          boxShadow: `-4px 0 20px ${colors.primary}15`,
+          zIndex: 1000,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          transition: "right 0.3s ease-in-out",
         }}
+        className="w-full md:w-96"
       >
-        <h2
-          style={{
-            fontSize: "24px",
-            fontWeight: "700",
-            margin: "0 0 16px 0",
-          }}
-        >
-          🗺️ Térkép Helyek
-        </h2>
-
-        {/* Tab Navigation */}
-        <div style={{ display: "flex", gap: "4px", marginBottom: "0" }}>
+        {/* Collapse/Expand Toggle Button - Desktop only */}
+        {onToggleCollapse && (
           <button
-            onClick={() => setActiveTab("search")}
+            onClick={onToggleCollapse}
             style={{
-              flex: 1,
-              padding: "12px 8px",
-              backgroundColor:
-                activeTab === "search" ? colors.white : "transparent",
-              color: activeTab === "search" ? colors.primary : colors.white,
+              position: "absolute",
+              left: "-48px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: "40px",
+              height: "80px",
+              backgroundColor: colors.primary,
               border: "none",
-              borderRadius: "8px 8px 0 0",
-              fontSize: "13px",
-              fontWeight: "600",
+              borderRadius: "8px 0 0 8px",
+              color: colors.white,
               cursor: "pointer",
-              transition: "all 0.2s",
-              position: "relative",
+              zIndex: 1001,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              transition: "all 0.2s ease",
+              boxShadow: `-2px 0 10px ${colors.primary}20`,
             }}
-          >
-            🔍 Keresés
-            {hasActiveFilters && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: "6px",
-                  right: "6px",
-                  width: "8px",
-                  height: "8px",
-                  backgroundColor: colors.danger,
-                  borderRadius: "50%",
-                }}
-              />
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("add")}
-            style={{
-              flex: 1,
-              padding: "12px 8px",
-              backgroundColor:
-                activeTab === "add" ? colors.white : "transparent",
-              color: activeTab === "add" ? colors.primary : colors.white,
-              border: "none",
-              borderRadius: "8px 8px 0 0",
-              fontSize: "13px",
-              fontWeight: "600",
-              cursor: "pointer",
-              transition: "all 0.2s",
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.secondary;
+              e.currentTarget.style.transform = "translateY(-50%) scale(1.05)";
             }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colors.primary;
+              e.currentTarget.style.transform = "translateY(-50%) scale(1)";
+            }}
+            title={isCollapsed ? "Oldalsáv megnyitása" : "Oldalsáv becsukása"}
+            className="hidden md:flex"
           >
-            ➕ Hozzáadás
+            {isCollapsed ? "◀" : "▶"}
           </button>
-        </div>
-      </div>
-
-      {/* Tab Content */}
-      <div
-        style={{
-          flex: "1",
-          overflowY: "auto",
-          padding: "20px",
-          paddingBottom: user ? "80px" : "20px", // Extra padding ha van bejelentkezett user
-          overflowX: "hidden",
-          backgroundColor: colors.white,
-        }}
-      >
-        {activeTab === "search" && (
-          <div>
-            <SearchBar
-              searchTerm={searchTerm}
-              onSearchChange={onSearchChange}
-            />
-            <FilterPanel filters={filters} onFiltersChange={onFiltersChange} />
-            <PlacesList
-              places={filteredPlaces}
-              selectedPlace={selectedPlace}
-              onSelectPlace={onSelectPlace}
-              onDeletePlace={onDeletePlace}
-            />
-          </div>
         )}
 
-        {activeTab === "add" && <SidebarAddForm onAddByAddress={onAddPlace} />}
-      </div>
+        {/* Header */}
+        <div
+          style={{
+            padding: "24px 20px 0px",
+            background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
+            color: colors.white,
+          }}
+          className="px-5 pt-6 md:px-5 md:pt-6 sm:px-4 sm:pt-4 relative"
+        >
+          {/* Mobile close button */}
+          {onToggleCollapse && (
+            <button
+              onClick={onToggleCollapse}
+              className="md:hidden absolute top-4 right-4 w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white text-lg hover:bg-opacity-30 transition-all"
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+              }}
+            >
+              ✕
+            </button>
+          )}
 
-      {/* Profile Bar */}
-      <ProfileBar />
-    </div>
+          <h2
+            style={{
+              fontSize: "24px",
+              fontWeight: "700",
+              margin: "0 0 16px 0",
+            }}
+            className="text-xl md:text-2xl pr-0 md:pr-0 sm:pr-10"
+          >
+            🗺️ Térkép Helyek
+          </h2>
+
+          {/* Tab Navigation */}
+          <div style={{ display: "flex", gap: "4px", marginBottom: "0" }}>
+            <button
+              onClick={() => setActiveTab("search")}
+              style={{
+                flex: 1,
+                padding: "12px 8px",
+                backgroundColor:
+                  activeTab === "search" ? colors.white : "transparent",
+                color: activeTab === "search" ? colors.primary : colors.white,
+                border: "none",
+                borderRadius: "8px 8px 0 0",
+                fontSize: "13px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                position: "relative",
+              }}
+            >
+              🔍 Keresés
+              {hasActiveFilters && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "6px",
+                    right: "6px",
+                    width: "8px",
+                    height: "8px",
+                    backgroundColor: colors.danger,
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("add")}
+              style={{
+                flex: 1,
+                padding: "12px 8px",
+                backgroundColor:
+                  activeTab === "add" ? colors.white : "transparent",
+                color: activeTab === "add" ? colors.primary : colors.white,
+                border: "none",
+                borderRadius: "8px 8px 0 0",
+                fontSize: "13px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              ➕ Hozzáadás
+            </button>
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div
+          style={{
+            flex: "1",
+            overflowY: "auto",
+            padding: "20px",
+            paddingBottom: user ? "80px" : "20px", // Extra padding ha van bejelentkezett user
+            overflowX: "hidden",
+            backgroundColor: colors.white,
+          }}
+          className="flex-1 overflow-y-auto p-5 md:p-5 sm:p-4 pb-20 md:pb-20"
+        >
+          {activeTab === "search" && (
+            <div>
+              <SearchBar
+                searchTerm={searchTerm}
+                onSearchChange={onSearchChange}
+              />
+              <FilterPanel
+                filters={filters}
+                onFiltersChange={onFiltersChange}
+              />
+              <PlacesList
+                places={filteredPlaces}
+                selectedPlace={selectedPlace}
+                onSelectPlace={onSelectPlace}
+                onDeletePlace={onDeletePlace}
+              />
+            </div>
+          )}
+
+          {activeTab === "add" && (
+            <SidebarAddForm onAddByAddress={onAddPlace} />
+          )}
+        </div>
+
+        {/* Profile Bar */}
+        <ProfileBar />
+      </div>
+    </>
   );
 }

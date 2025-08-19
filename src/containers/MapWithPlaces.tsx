@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Place, FilterCriteria } from "../types/Place";
 import MapComponent from "../components/MapComponent";
 import Sidebar from "../components/Sidebar";
@@ -19,6 +19,25 @@ export default function MapWithPlaces() {
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllPopups, setShowAllPopups] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Mobile eszközökön alapértelmezetten becsukott
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setSidebarCollapsed(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const [filters, setFilters] = useState<FilterCriteria>({
     minPrice: undefined,
     maxPrice: undefined,
@@ -298,9 +317,33 @@ export default function MapWithPlaces() {
           onSearchChange={setSearchTerm}
           filters={filters}
           onFiltersChange={setFilters}
+          isCollapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
 
-        <div className="flex-1 relative">
+        <div
+          className={`flex-1 relative transition-all duration-300 ${
+            sidebarCollapsed ? "mr-0" : "mr-0 md:mr-96"
+          }`}
+        >
+          {/* Desktop hamburger menu when sidebar is collapsed */}
+          {sidebarCollapsed && (
+            <button
+              onClick={() => setSidebarCollapsed(false)}
+              className="hidden md:flex absolute top-4 right-4 z-50 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full items-center justify-center shadow-lg transition-all"
+            >
+              ☰
+            </button>
+          )}
+
+          {/* Mobile hamburger menu */}
+          <button
+            onClick={() => setSidebarCollapsed(false)}
+            className="md:hidden absolute top-4 right-4 z-50 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all"
+          >
+            ☰
+          </button>
+
           <MapComponent
             places={filteredPlaces}
             onMapClick={handleMapClick}
