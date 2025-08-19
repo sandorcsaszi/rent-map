@@ -23,20 +23,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+
+      // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
+      if (session?.user) {
+        ensureUserProfile(session.user);
+      }
+
       setLoading(false);
     });
 
     // Auth változások figyelése
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+
+      // Ha van felhasználó, ellenőrizzük, hogy létezik-e a profilban
+      if (session?.user) {
+        await ensureUserProfile(session.user);
+      }
+
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Profil létrehozása, ha nem létezik
+  const ensureUserProfile = async (user: User) => {
+    try {
+      // Ellenőrizzük, hogy létezik-e már a profil
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+
+      // Ha nem létezik, létrehozzuk
+      if (!existingProfile) {
+        const { error } = await supabase.from("profiles").insert([
+          {
+            id: user.id,
+            email: user.email,
+            full_name:
+              user.user_metadata?.full_name ||
+              user.user_metadata?.name ||
+              user.email?.split("@")[0],
+            avatar_url:
+              user.user_metadata?.avatar_url || user.user_metadata?.picture,
+            updated_at: new Date().toISOString(),
+          },
+        ]);
+
+        if (error) {
+          console.error("Hiba a profil létrehozásakor:", error);
+        } else {
+          console.log("Profil sikeresen létrehozva:", user.id);
+        }
+      }
+    } catch (error) {
+      console.error("Hiba a profil ellenőrzésekor:", error);
+    }
+  };
 
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({

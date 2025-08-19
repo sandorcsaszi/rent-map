@@ -3,7 +3,7 @@ export interface Place {
   id: string;
   user_id: string;
   name: string;
-  title?: string;
+  title: string; // Kötelező mező az adatbázisban
   description?: string;
   address?: string;
   lat: number;
@@ -28,7 +28,7 @@ export interface Place {
 
 export interface PlaceFormData {
   name: string;
-  title?: string;
+  title: string; // Kötelező mező
   description?: string;
   address?: string;
   rent_price?: number;

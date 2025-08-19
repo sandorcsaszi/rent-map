@@ -665,8 +665,8 @@ function SidebarAddForm({
       if (coordinates) {
         onAddByAddress({
           user_id: "",
-          name: newPlace.title || "",
-          title: newPlace.title || "",
+          name: newPlace.title || newPlace.name || "Új hely",
+          title: newPlace.title || newPlace.name || "Új hely",
           description: newPlace.description || "",
           address: newPlace.address || "",
           lat: coordinates[0],

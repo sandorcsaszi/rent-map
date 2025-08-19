@@ -56,8 +56,20 @@ class BKKApiService {
   private apiKey: string;
   private baseUrl: string;
   private cache = new Map<string, BKKStop[]>();
-  private cacheTimestamp = 0;
-  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 perc cache
+  private cacheTimestamps = new Map<string, number>();
+  private pendingRequests = new Map<string, Promise<BKKStop[]>>();
+  private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 perc cache (növelve)
+  private readonly MIN_DISTANCE_FOR_NEW_REQUEST = 200; // 200m minimum távolság új kéréshez
+  private readonly REQUEST_THROTTLE_MS = 1000; // 1 másodperc minimum két kérés között
+  private lastRequestTime = 0;
+  
+  // Statisztikák
+  private stats = {
+    totalRequests: 0,
+    cacheHits: 0,
+    nearCacheHits: 0,
+    apiCalls: 0
+  };
 
   constructor() {
     this.apiKey = import.meta.env.VITE_BKK_API_KEY || '';
@@ -66,6 +78,39 @@ class BKKApiService {
     if (!this.apiKey) {
       console.warn('BKK API kulcs nincs beállítva! Állítsd be a VITE_BKK_API_KEY environment változót.');
     }
+  }
+
+  // Távolság számítás két koordináta között (Haversine formula)
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371000; // Föld sugara méterben
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  // Legközelebbi cache bejegyzés keresése
+  private findNearestCacheEntry(lat: number, lon: number): { key: string; distance: number; data: BKKStop[] } | null {
+    let nearest: { key: string; distance: number; data: BKKStop[] } | null = null;
+    
+    for (const [key, data] of this.cache.entries()) {
+      const timestamp = this.cacheTimestamps.get(key);
+      if (!timestamp || Date.now() - timestamp > this.CACHE_DURATION) continue;
+      
+      const [, latStr, lonStr] = key.split('_');
+      const cachedLat = parseFloat(latStr);
+      const cachedLon = parseFloat(lonStr);
+      const distance = this.calculateDistance(lat, lon, cachedLat, cachedLon);
+      
+      if (!nearest || distance < nearest.distance) {
+        nearest = { key, distance, data };
+      }
+    }
+    
+    return nearest;
   }
 
   private determineStopType(stop: any, routes: Record<string, BKKRoute>): 'bus' | 'tram' | 'metro1' | 'metro2' | 'metro3' | 'metro4' | 'suburban' | 'other' {
@@ -177,6 +222,14 @@ class BKKApiService {
       throw new Error('BKK API kulcs nincs beállítva');
     }
 
+    // Throttling: várunk, ha túl gyakran hívjuk az API-t
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    if (timeSinceLastRequest < this.REQUEST_THROTTLE_MS) {
+      await new Promise(resolve => setTimeout(resolve, this.REQUEST_THROTTLE_MS - timeSinceLastRequest));
+    }
+    this.lastRequestTime = Date.now();
+
     try {
       // BKK Futár API: stops-for-location endpoint - 500m
       const response = await fetch(
@@ -238,25 +291,70 @@ class BKKApiService {
   }
 
   async getStopsAroundCenter(centerLat: number, centerLon: number): Promise<BKKStop[]> {
+    this.stats.totalRequests++;
+    
     const now = Date.now();
     const cacheKey = `stops_${centerLat.toFixed(4)}_${centerLon.toFixed(4)}`;
 
-    // Cache ellenőrzés
-    if (this.cache.has(cacheKey) && (now - this.cacheTimestamp) < this.CACHE_DURATION) {
+    // 1. Pontos cache ellenőrzés
+    const cacheTimestamp = this.cacheTimestamps.get(cacheKey);
+    if (this.cache.has(cacheKey) && cacheTimestamp && (now - cacheTimestamp) < this.CACHE_DURATION) {
+      this.stats.cacheHits++;
       return this.cache.get(cacheKey)!;
     }
 
+    // 2. Közeli cache bejegyzés keresése
+    const nearest = this.findNearestCacheEntry(centerLat, centerLon);
+    if (nearest && nearest.distance < this.MIN_DISTANCE_FOR_NEW_REQUEST) {
+      this.stats.nearCacheHits++;
+      
+      // Ha van elég közeli cache, azt használjuk és szűrjük a 500m-es körre
+      const filteredStops = nearest.data.filter(stop => {
+        const distance = this.calculateDistance(centerLat, centerLon, stop.lat, stop.lon);
+        return distance <= 500; // 500m radius
+      });
+      
+      // Cache-eljük az új pozícióra is
+      this.cache.set(cacheKey, filteredStops);
+      this.cacheTimestamps.set(cacheKey, now);
+      
+      return filteredStops;
+    }
+
+    // 3. Ellenőrizzük, hogy már folyamatban van-e ez a kérés
+    if (this.pendingRequests.has(cacheKey)) {
+      return this.pendingRequests.get(cacheKey)!;
+    }
+
+    // 4. Új API kérés
+    this.stats.apiCalls++;
+    const requestPromise = this.fetchStops(centerLat, centerLon);
+    this.pendingRequests.set(cacheKey, requestPromise);
+
     try {
-      const stops = await this.fetchStops(centerLat, centerLon);
+      const stops = await requestPromise;
       this.cache.set(cacheKey, stops);
-      this.cacheTimestamp = now;
+      this.cacheTimestamps.set(cacheKey, now);
+      this.pendingRequests.delete(cacheKey);
       return stops;
     } catch (error) {
+      this.pendingRequests.delete(cacheKey);
+      
       // Ha van cache-elt adat és az API hívás sikertelen, azt adjuk vissza
       if (this.cache.has(cacheKey)) {
         console.warn('BKK API hívás sikertelen, cache-elt adatok használata');
         return this.cache.get(cacheKey)!;
       }
+      
+      // Ha van közeli cache, azt használjuk fallback-ként
+      if (nearest) {
+        console.warn('BKK API hívás sikertelen, közeli cache használata');
+        return nearest.data.filter(stop => {
+          const distance = this.calculateDistance(centerLat, centerLon, stop.lat, stop.lon);
+          return distance <= 500;
+        });
+      }
+      
       throw error;
     }
   }
@@ -283,7 +381,30 @@ class BKKApiService {
 
   clearCache(): void {
     this.cache.clear();
-    this.cacheTimestamp = 0;
+    this.cacheTimestamps.clear();
+    this.pendingRequests.clear();
+  }
+
+  // Statisztikák lekérése és teljesítmény követés
+  getStats() {
+    const cacheEfficiency = this.stats.totalRequests > 0 
+      ? ((this.stats.cacheHits + this.stats.nearCacheHits) / this.stats.totalRequests * 100).toFixed(1)
+      : '0';
+      
+    return {
+      ...this.stats,
+      cacheEfficiency: `${cacheEfficiency}%`,
+      cacheSize: this.cache.size
+    };
+  }
+
+  resetStats(): void {
+    this.stats = {
+      totalRequests: 0,
+      cacheHits: 0,
+      nearCacheHits: 0,
+      apiCalls: 0
+    };
   }
 }
 

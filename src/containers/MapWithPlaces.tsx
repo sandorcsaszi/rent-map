@@ -65,7 +65,8 @@ export default function MapWithPlaces() {
 
     try {
       const newPlace = {
-        name: placeData.title || placeData.name,
+        name: placeData.title || placeData.name || "Új hely",
+        title: placeData.title || placeData.name || "Új hely",
         description: placeData.description || "",
         address: placeData.address || "",
         lat: addingPosition[0],
@@ -88,7 +89,8 @@ export default function MapWithPlaces() {
 
     try {
       const updates = {
-        name: updatedData.title || updatedData.name,
+        name: updatedData.title || updatedData.name || "Új hely",
+        title: updatedData.title || updatedData.name || "Új hely",
         description: updatedData.description || "",
         address: updatedData.address || "",
         rent_price: updatedData.rentPrice || 0,
