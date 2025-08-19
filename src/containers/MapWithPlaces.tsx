@@ -32,13 +32,13 @@ export default function MapWithPlaces() {
     ...place,
     position: [place.lat, place.lng] as [number, number],
     title: place.name,
-    price: place.total_price
-      ? `${place.total_price.toLocaleString()} Ft`
+    price: place.rent_price
+      ? `${place.rent_price.toLocaleString()} Ft`
       : `${(place.rent_price || 0).toLocaleString()} Ft`,
     createdAt: place.created_at,
     rentPrice: place.rent_price,
-    utilityCost: place.utilities_price,
-    commonCost: place.deposit_price,
+    utilityCost: place.utility_cost,
+    commonCost: place.common_cost,
   }));
 
   const handleMapClick = (position: [number, number]) => {
@@ -71,11 +71,11 @@ export default function MapWithPlaces() {
         lat: addingPosition[0],
         lng: addingPosition[1],
         rent_price: placeData.rentPrice || 0,
-        deposit_price: placeData.commonCost || 0,
-        utilities_price: placeData.utilityCost || 0,
+        common_cost: placeData.commonCost || 0,
+        utility_cost: placeData.utilityCost || 0,
         room_count: placeData.roomCount || 1,
         property_type: (placeData.propertyType as any) || "apartment",
-        is_public: true,
+        is_public: false,
       };
 
       await createPlace(newPlace);
@@ -144,15 +144,14 @@ export default function MapWithPlaces() {
         lat: placeData.lat,
         lng: placeData.lng,
         rent_price: placeData.rent_price || placeData.rentPrice || 0,
-        deposit_price: placeData.deposit_price || placeData.commonCost || 0,
-        utilities_price:
-          placeData.utilities_price || placeData.utilityCost || 0,
+        common_cost: placeData.common_cost || placeData.commonCost || 0,
+        utility_cost: placeData.utility_cost || placeData.utilityCost || 0,
         room_count: placeData.room_count || 1,
         property_type: placeData.property_type || "apartment",
         floor: placeData.floor,
         has_elevator: placeData.hasElevator,
         link: placeData.link,
-        is_public: placeData.is_public ?? true,
+        is_public: false,
       };
 
       await createPlace(newPlace);
@@ -172,15 +171,14 @@ export default function MapWithPlaces() {
         description: placeData.description || "",
         address: placeData.address || "",
         rent_price: placeData.rent_price || placeData.rentPrice || 0,
-        deposit_price: placeData.deposit_price || placeData.commonCost || 0,
-        utilities_price:
-          placeData.utilities_price || placeData.utilityCost || 0,
+        common_cost: placeData.common_cost || placeData.commonCost || 0,
+        utility_cost: placeData.utility_cost || placeData.utilityCost || 0,
         room_count: placeData.room_count || 1,
         property_type: placeData.property_type || "apartment",
         floor: placeData.floor,
         has_elevator: placeData.hasElevator,
         link: placeData.link,
-        is_public: placeData.is_public ?? true,
+        is_public: false,
       };
 
       await updatePlace(placeData.id, updates);

@@ -254,68 +254,6 @@ export default function PlaceDetails({
         </div>
       )}
 
-      {place.images && place.images.length > 0 && (
-        <div style={{ marginBottom: "12px" }}>
-          <h4
-            style={{
-              fontSize: "14px",
-              fontWeight: "600",
-              color: colors.secondary,
-              marginBottom: "8px",
-              margin: "0 0 8px 0",
-            }}
-          >
-            📷 Képek ({place.images.length})
-          </h4>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))",
-              gap: "8px",
-            }}
-          >
-            {place.images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`${place.title} - Kép ${index + 1}`}
-                style={{
-                  width: "100%",
-                  height: "100px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                  border: `1px solid ${colors.lightGray}`,
-                  cursor: "pointer",
-                  transition: "transform 0.2s",
-                }}
-                onClick={() => {
-                  // Kép nagyítás modal - egyszerű megoldás
-                  const modal = window.open("", "_blank");
-                  if (modal) {
-                    modal.document.write(`
-                      <html>
-                        <head><title>${place.title} - Kép ${
-                      index + 1
-                    }</title></head>
-                        <body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;">
-                          <img src="${image}" style="max-width:100%;max-height:100%;object-fit:contain;" />
-                        </body>
-                      </html>
-                    `);
-                  }
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
       <div
         style={{
           fontSize: "12px",

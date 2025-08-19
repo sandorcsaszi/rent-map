@@ -2,23 +2,7 @@ import { supabase } from '../lib/supabase'
 import type { Place } from '../types/Place'
 
 export class PlacesService {
-  // Összes nyilvános hely lekérése
-  static async getPublicPlaces(): Promise<Place[]> {
-    const { data, error } = await supabase
-      .from('places')
-      .select('*')
-      .eq('is_public', true)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Hiba a helyek lekérésekor:', error)
-      throw error
-    }
-
-    return data || []
-  }
-
-  // Felhasználó saját helyeinek lekérése
+  // Felhasználó saját helyeinek lekérése (nincs többé nyilvános hely)
   static async getUserPlaces(userId: string): Promise<Place[]> {
     const { data, error } = await supabase
       .from('places')
@@ -34,8 +18,8 @@ export class PlacesService {
     return data || []
   }
 
-  // Új hely létrehozása
-  static async createPlace(place: Omit<Place, 'id' | 'created_at' | 'updated_at' | 'total_price'>): Promise<Place> {
+  // Új hely létrehozása (mindig privát)
+  static async createPlace(place: Omit<Place, 'id' | 'created_at' | 'updated_at'>): Promise<Place> {
     const { data, error } = await supabase
       .from('places')
       .insert([place])
@@ -80,22 +64,22 @@ export class PlacesService {
     }
   }
 
-  // Real-time subscription a helyekre
-  static subscribeToPlaces(callback: (places: Place[]) => void) {
+  // Real-time subscription a felhasználó helyeire
+  static subscribeToUserPlaces(userId: string, callback: (places: Place[]) => void) {
     const subscription = supabase
-      .channel('places_changes')
+      .channel('user_places_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
           table: 'places',
-          filter: 'is_public=eq.true'
+          filter: `user_id=eq.${userId}`
         },
         async () => {
           // Amikor változás történik, újra lekérjük az adatokat
           try {
-            const places = await this.getPublicPlaces()
+            const places = await this.getUserPlaces(userId)
             callback(places)
           } catch (error) {
             console.error('Hiba a real-time frissítéskor:', error)
@@ -114,52 +98,44 @@ import { useAuth } from '../contexts/AuthContext'
 
 export function usePlaces() {
   const { user } = useAuth()
-  const [places, setPlaces] = useState<Place[]>([])
   const [userPlaces, setUserPlaces] = useState<Place[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  // Nyilvános helyek betöltése
-  useEffect(() => {
-    const loadPlaces = async () => {
-      try {
-        setLoading(true)
-        const publicPlaces = await PlacesService.getPublicPlaces()
-        setPlaces(publicPlaces)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Hiba történt')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadPlaces()
-
-    // Real-time subscription
-    const subscription = PlacesService.subscribeToPlaces(setPlaces)
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
 
   // Felhasználó helyeinek betöltése
   useEffect(() => {
     const loadUserPlaces = async () => {
       if (!user) {
         setUserPlaces([])
+        setLoading(false)
         return
       }
 
       try {
+        setLoading(true)
         const places = await PlacesService.getUserPlaces(user.id)
         setUserPlaces(places)
       } catch (err) {
+        setError(err instanceof Error ? err.message : 'Hiba történt a helyek betöltésekor')
         console.error('Hiba a felhasználó helyeinek betöltésekor:', err)
+      } finally {
+        setLoading(false)
       }
     }
 
     loadUserPlaces()
+
+    // Real-time subscription csak ha van bejelentkezett felhasználó
+    let subscription: any = null
+    if (user) {
+      subscription = PlacesService.subscribeToUserPlaces(user.id, setUserPlaces)
+    }
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+    }
   }, [user])
 
   const createPlace = async (placeData: Omit<Place, 'id' | 'created_at' | 'updated_at' | 'total_price' | 'user_id'>) => {
@@ -171,10 +147,7 @@ export function usePlaces() {
         user_id: user.id
       })
       
-      // Helyi state frissítése
-      if (newPlace.is_public) {
-        setPlaces(prev => [newPlace, ...prev])
-      }
+      // Helyi state frissítése - minden hely privát
       setUserPlaces(prev => [newPlace, ...prev])
       
       return newPlace
@@ -189,7 +162,6 @@ export function usePlaces() {
       const updatedPlace = await PlacesService.updatePlace(id, updates)
       
       // Helyi state frissítése
-      setPlaces(prev => prev.map(p => p.id === id ? updatedPlace : p))
       setUserPlaces(prev => prev.map(p => p.id === id ? updatedPlace : p))
       
       return updatedPlace
@@ -204,7 +176,6 @@ export function usePlaces() {
       await PlacesService.deletePlace(id)
       
       // Helyi state frissítése
-      setPlaces(prev => prev.filter(p => p.id !== id))
       setUserPlaces(prev => prev.filter(p => p.id !== id))
     } catch (err) {
       console.error('Hiba a hely törlésekor:', err)
@@ -213,7 +184,7 @@ export function usePlaces() {
   }
 
   return {
-    places,
+    places: userPlaces, // Az egyetlen helylista mostantól a felhasználó helyei
     userPlaces,
     loading,
     error,

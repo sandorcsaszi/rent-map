@@ -642,7 +642,7 @@ function SidebarAddForm({
 }) {
   const [newPlace, setNewPlace] = useState<PlaceFormData>({
     name: "",
-    is_public: true,
+    is_public: false,
     title: "",
     price: "",
     description: "",
@@ -673,12 +673,12 @@ function SidebarAddForm({
           lat: coordinates[0],
           lng: coordinates[1],
           rent_price: newPlace.rentPrice,
-          utilities_price: newPlace.utilityCost,
-          deposit_price: newPlace.commonCost,
+          utility_cost: newPlace.utilityCost,
+          common_cost: newPlace.commonCost,
           floor: newPlace.floor,
           hasElevator: newPlace.hasElevator,
           link: newPlace.link || undefined,
-          is_public: true,
+          is_public: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           // Kompatibilitási mezők
@@ -691,7 +691,7 @@ function SidebarAddForm({
         });
         setNewPlace({
           name: "",
-          is_public: true,
+          is_public: false,
           title: "",
           price: "",
           description: "",
