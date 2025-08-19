@@ -366,7 +366,7 @@ export default function MapWithPlaces() {
                 console.log("Burger menu clicked! Opening sidebar...");
                 setSidebarCollapsed(false);
               }}
-              className="fixed top-4 left-4 z-[2000] w-20 h-20 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              className="fixed top-4 right-4 z-[2000] w-20 h-20 bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               style={{
                 borderRadius: "12px",
                 boxShadow: "0 8px 32px rgba(220, 38, 38, 0.6)",
