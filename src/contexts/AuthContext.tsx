@@ -156,14 +156,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     try {
       console.log("Initiating Google sign in...");
+      
+      // Force account selection and consent every time
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: "offline",
-            prompt: "consent",
+            prompt: "consent select_account", // Force account selection and consent
+            include_granted_scopes: "true",
           },
+          skipBrowserRedirect: false,
         },
       });
 
@@ -182,13 +186,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGitHub = async () => {
     try {
       console.log("Initiating GitHub sign in...");
+      
+      // GitHub doesn't need special prompt handling, but ensure clean redirect
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "github",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             scope: "read:user user:email",
+            allow_signup: "true",
           },
+          skipBrowserRedirect: false,
         },
       });
 
@@ -208,8 +216,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log("Kijelentkezés kezdeményezése...");
     
     try {
-      // Sign out from Supabase first
-      const { error } = await supabase.auth.signOut();
+      // Clear local state first
+      setUser(null);
+      setProfile(null);
+      setLoading(true);
+      
+      // Sign out from Supabase with scope 'local' to clear all auth data
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
       
       if (error) {
         console.error("Supabase kijelentkezési hiba:", error);
@@ -217,20 +230,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log("Sikeres kijelentkezés");
       }
       
-      // Clear local state
-      setUser(null);
-      setProfile(null);
-      setLoading(false);
+      // Clear browser storage manually to ensure clean slate
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.includes('supabase') || key.includes('auth')) {
+          localStorage.removeItem(key);
+        }
+      });
       
+      const sessionKeys = Object.keys(sessionStorage);
+      sessionKeys.forEach(key => {
+        if (key.includes('supabase') || key.includes('auth')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+      
+      setLoading(false);
       return { error };
     } catch (err) {
       console.error("Kijelentkezési kivétel:", err);
       
-      // Even if error, clear local state
+      // Even if error, clear local state and storage
       setUser(null);
       setProfile(null);
-      setLoading(false);
       
+      // Force clear storage
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (storageError) {
+        console.error("Storage clear error:", storageError);
+      }
+      
+      setLoading(false);
       return { error: err as AuthError };
     }
   };

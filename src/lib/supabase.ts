@@ -18,6 +18,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     storage: window.localStorage,
     // Debug mód fejlesztéshez
     debug: false,
+    // Flow type beállítása
+    flowType: 'pkce',
+    // Storage key egyedi legyen
+    storageKey: 'rent-map-auth-token',
   },
   // Globális beállítások
   global: {
