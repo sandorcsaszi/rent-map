@@ -137,8 +137,12 @@ export default function MapWithPlaces() {
         rent_price: updatedData.rentPrice || 0,
         common_cost: updatedData.commonCost || 0,
         utility_cost: updatedData.utilityCost || 0,
+        link: updatedData.link || null,
+        floor: updatedData.floor || null,
+        has_elevator: updatedData.hasElevator || null,
       };
 
+      console.log("Sending updates to database:", updates);
       await updatePlace(editingPlace.id, updates);
       setEditingPlace(null);
     } catch (error) {
