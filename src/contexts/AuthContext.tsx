@@ -41,29 +41,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Profil létrehozása, ha nem létezik
   const ensureUserProfile = async (user: User) => {
     try {
-      console.log("🔍 Profil ellenőrzése felhasználónak:", user.id);
+      console.log("Profil ellenőrzése felhasználónak:", user.id);
 
       // Ellenőrizzük, hogy létezik-e már a profil
-      console.log("📡 Lekérdezés a profiles táblából...");
       const { data: existingProfile, error: fetchError } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .single();
 
-      console.log("📊 Profil lekérdezés eredménye:", { 
-        hasProfile: !!existingProfile, 
-        error: fetchError?.message,
-        errorCode: fetchError?.code 
-      });
-
       if (existingProfile && !fetchError) {
-        console.log("✅ Profil már létezik:", existingProfile.username);
+        console.log("Profil már létezik:", existingProfile);
         return existingProfile;
       }
 
       // Ha nem létezik, létrehozzuk
-      console.log("➕ Új profil létrehozása felhasználónak:", user.id);
+      console.log("Új profil létrehozása:", user.id);
 
       const newProfile = {
         id: user.id,
@@ -78,8 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updated_at: new Date().toISOString(),
       };
 
-      console.log("📝 Profil adatok:", newProfile);
-
       const { data: createdProfile, error: createError } = await supabase
         .from("profiles")
         .insert([newProfile])
@@ -87,14 +78,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (createError) {
-        console.error("❌ Profil létrehozási hiba:", createError);
+        console.error("Profil létrehozási hiba:", createError);
         return null;
       }
 
-      console.log("✅ Profil sikeresen létrehozva:", createdProfile.username);
+      console.log("Profil sikeresen létrehozva:", createdProfile);
       return createdProfile;
     } catch (error) {
-      console.error("💥 Profil kezelési kivétel:", error);
+      console.error("Profil kezelési hiba:", error);
       return null;
     }
   };
@@ -213,22 +204,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
       ) {
         console.log("✅ User signed in or token refreshed, ensuring profile");
-        
-        try {
-          // Timeout hozzáadása a profil ellenőrzéshez
-          const userProfile = await Promise.race([
-            ensureUserProfile(currentUser),
-            new Promise((_, reject) => 
-              setTimeout(() => reject(new Error("Profile check timeout")), 10000)
-            )
-          ]);
-          
-          console.log("📋 Profile result:", userProfile ? "Success" : "Failed");
-          setProfile(userProfile);
-        } catch (error) {
-          console.error("❌ Profile error:", error);
-          setProfile(null);
-        }
+        const userProfile = await ensureUserProfile(currentUser);
+        console.log("📋 Profile result:", userProfile ? "Success" : "Failed");
+        setProfile(userProfile);
       } else if (!currentUser) {
         console.log("❌ No user, clearing profile");
         setProfile(null);
