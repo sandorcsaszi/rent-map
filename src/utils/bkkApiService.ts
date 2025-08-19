@@ -178,9 +178,9 @@ class BKKApiService {
     }
 
     try {
-      // BKK Futár API: stops-for-location endpoint - 1km = 1000m
+      // BKK Futár API: stops-for-location endpoint - 500m
       const response = await fetch(
-        `${this.baseUrl}/stops-for-location.json?key=${this.apiKey}&lat=${centerLat}&lon=${centerLon}&radius=1000&maxCount=100`,
+        `${this.baseUrl}/stops-for-location.json?key=${this.apiKey}&lat=${centerLat}&lon=${centerLon}&radius=500&maxCount=100`,
         {
           method: 'GET',
           headers: {

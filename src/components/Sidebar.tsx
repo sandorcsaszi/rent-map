@@ -642,7 +642,6 @@ function SidebarAddForm({
 }) {
   const [newPlace, setNewPlace] = useState<PlaceFormData>({
     name: "",
-    is_public: false,
     title: "",
     price: "",
     description: "",
@@ -678,7 +677,6 @@ function SidebarAddForm({
           floor: newPlace.floor,
           hasElevator: newPlace.hasElevator,
           link: newPlace.link || undefined,
-          is_public: false,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           // Kompatibilitási mezők
@@ -691,7 +689,6 @@ function SidebarAddForm({
         });
         setNewPlace({
           name: "",
-          is_public: false,
           title: "",
           price: "",
           description: "",

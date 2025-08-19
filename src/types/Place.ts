@@ -1,4 +1,4 @@
-// Supabase-kompatibilis Place típus
+// Supabase-kompatibilis Place típus - pontosan az adatbázis sémának megfelelően
 export interface Place {
   id: string;
   user_id: string;
@@ -14,14 +14,12 @@ export interface Place {
   floor?: number;
   has_elevator?: boolean;
   link?: string;
-  is_public: boolean; // Minden hely privát lesz
   created_at: string;
   updated_at: string;
-  // Régi kompatibilitáshoz
+  // Régi kompatibilitáshoz a UI számára
   position?: [number, number];
   price?: string;
   createdAt?: string;
-  // Régi szűrő mezők (kompatibilitás)
   rentPrice?: number;
   utilityCost?: number;
   commonCost?: number;
@@ -30,19 +28,20 @@ export interface Place {
 
 export interface PlaceFormData {
   name: string;
+  title?: string;
   description?: string;
   address?: string;
   rent_price?: number;
-  deposit_price?: number;
-  utilities_price?: number;
-  is_public: boolean;
-  title?: string;
-  price?: string;
+  utility_cost?: number;
+  common_cost?: number;
+  floor?: number;
+  has_elevator?: boolean;
   link?: string;
+  // Kompatibilitás a régi UI-val
+  price?: string;
   rentPrice?: number;
   utilityCost?: number;
   commonCost?: number;
-  floor?: number;
   hasElevator?: boolean;
 }
 

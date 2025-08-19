@@ -73,8 +73,6 @@ export default function MapWithPlaces() {
         rent_price: placeData.rentPrice || 0,
         common_cost: placeData.commonCost || 0,
         utility_cost: placeData.utilityCost || 0,
-        room_count: placeData.roomCount || 1,
-        is_public: false,
       };
 
       await createPlace(newPlace);
@@ -94,9 +92,8 @@ export default function MapWithPlaces() {
         description: updatedData.description || "",
         address: updatedData.address || "",
         rent_price: updatedData.rentPrice || 0,
-        deposit_price: updatedData.commonCost || 0,
-        utilities_price: updatedData.utilityCost || 0,
-        room_count: updatedData.roomCount || 1,
+        common_cost: updatedData.commonCost || 0,
+        utility_cost: updatedData.utilityCost || 0,
       };
 
       await updatePlace(editingPlace.id, updates);
@@ -147,7 +144,6 @@ export default function MapWithPlaces() {
         floor: placeData.floor,
         has_elevator: placeData.hasElevator,
         link: placeData.link,
-        is_public: false,
       };
 
       await createPlace(newPlace);
@@ -172,7 +168,6 @@ export default function MapWithPlaces() {
         floor: placeData.floor,
         has_elevator: placeData.hasElevator,
         link: placeData.link,
-        is_public: false,
       };
 
       await updatePlace(placeData.id, updates);

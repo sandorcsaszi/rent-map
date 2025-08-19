@@ -96,7 +96,6 @@ export default function PlaceForm({
             floor: floor,
             hasElevator: hasElevator,
             link: link || undefined,
-            is_public: false,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             // Kompatibilitási mezők
