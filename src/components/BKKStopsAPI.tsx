@@ -7,13 +7,23 @@ import {
   type BKKRoute,
 } from "../utils/bkkApiService";
 
+// Define the props type for the BKKStopsAPI component
+type BKKStopsAPIProps = {
   visible: boolean;
-}
+};
 
 // Helper: returns icon HTML with optional selected class
-function getStopIconHtml({ color, selected }: { color: string; selected: boolean }) {
+function getStopIconHtml({
+  color,
+  selected,
+}: {
+  color: string;
+  selected: boolean;
+}) {
   return `
-    <div class="bkk-stop-icon${selected ? ' bkk-stop-icon--selected' : ''}" style="
+    <div class="bkk-stop-icon${
+      selected ? " bkk-stop-icon--selected" : ""
+    }" style="
       background-color: ${color};
       width: 32px;
       height: 32px;
@@ -155,7 +165,6 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
         vehicleType = "BUS";
       }
 
-
       // Ikon létrehozása (nagyobb, szögletes, csak selected-re pulzál)
       const selected = stop.id === selectedStopId;
       const iconHtml = getStopIconHtml({ color, selected });
@@ -212,13 +221,13 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
 
       popupContent += `</div>`;
 
-  // Marker létrehozása
-  const marker = L.marker([stop.lat, stop.lon], { icon });
-  marker.bindPopup(popupContent);
-  marker.on('click', () => setSelectedStopId(stop.id));
-  marker.on('mouseover', () => setSelectedStopId(stop.id));
-  marker.on('mouseout', () => setSelectedStopId(null));
-  return marker;
+      // Marker létrehozása
+      const marker = L.marker([stop.lat, stop.lon], { icon });
+      marker.bindPopup(popupContent);
+      marker.on("click", () => setSelectedStopId(stop.id));
+      marker.on("mouseover", () => setSelectedStopId(stop.id));
+      marker.on("mouseout", () => setSelectedStopId(null));
+      return marker;
     });
   }, [visible, stops, selectedStopId]);
 
