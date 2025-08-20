@@ -563,9 +563,10 @@ export default function MapWithPlaces() {
           gap: "12px",
           fontSize: "14px",
           color: "#6b7280",
-          zIndex: 999,
+          zIndex: 10000, // Még magasabb mint a LoginModal
           transition: "all 0.3s ease",
         }}
+        className="max-w-xs sm:max-w-sm md:max-w-md" // Responsive szélesség
       >
         <span style={{ fontWeight: "500", color: "#374151" }}>
           Készítette: Császi Sándor
