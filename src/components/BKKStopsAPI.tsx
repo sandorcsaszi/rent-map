@@ -108,10 +108,33 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
   }, [loadStops, debounceTimer]);
 
   // Markek létrehozása
+  // Remove stops that are too close to each other (e.g., <30m)
+  function filterNearbyStops(stops: BKKStop[], minDistance = 30) {
+    const filtered: BKKStop[] = [];
+    for (const stop of stops) {
+      if (
+        !filtered.some(
+          (s) =>
+            Math.sqrt(
+              Math.pow(stop.lat - s.lat, 2) + Math.pow(stop.lon - s.lon, 2)
+            ) *
+              111320 <
+            minDistance // ~meters
+        )
+      ) {
+        filtered.push(stop);
+      }
+    }
+    return filtered;
+  }
+
   const createMarkers = useMemo(() => {
     if (!visible || stops.length === 0) return [];
 
-    return stops.map((stop) => {
+    // Remove overlapping/nearby stops
+    const filteredStops = filterNearbyStops(stops);
+
+    return filteredStops.map((stop) => {
       // Szín meghatározása járműtípus alapján
       let color = "#3b82f6"; // default kék
       let vehicleType = "BUS";
@@ -224,7 +247,10 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
       // Marker létrehozása
       const marker = L.marker([stop.lat, stop.lon], { icon });
       marker.bindPopup(popupContent);
-      marker.on("click", () => setSelectedStopId(stop.id));
+      marker.on("click", () => {
+        setSelectedStopId(stop.id);
+        marker.openPopup();
+      });
       marker.on("mouseover", () => {
         if (!selectedStopId) setSelectedStopId(stop.id);
       });
