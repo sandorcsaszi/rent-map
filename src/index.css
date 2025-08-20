@@ -144,19 +144,23 @@ html, body, #root {
 }
 
 /* BKK stop icon animation and hover effect */
+
 .bkk-stop-icon {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #38bdf8 60%, #0ea5e9 100%);
-  box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+  box-shadow: 0 2px 8px 0 rgba(56, 189, 248, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.18s cubic-bezier(0.4,0,0.2,1), box-shadow 0.18s cubic-bezier(0.4,0,0.2,1);
-  animation: bkk-pulse 1.4s infinite cubic-bezier(0.66,0,0,1);
   cursor: pointer;
   border: 2px solid #fff;
+}
+
+.bkk-stop-icon--selected {
+  animation: bkk-pulse 1.4s infinite cubic-bezier(0.66,0,0,1);
 }
 
 .bkk-stop-icon:hover,

@@ -7,11 +7,32 @@ import {
   type BKKRoute,
 } from "../utils/bkkApiService";
 
-interface BKKStopsAPIProps {
   visible: boolean;
 }
 
+// Helper: returns icon HTML with optional selected class
+function getStopIconHtml({ color, selected }: { color: string; selected: boolean }) {
+  return `
+    <div class="bkk-stop-icon${selected ? ' bkk-stop-icon--selected' : ''}" style="
+      background-color: ${color};
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 2px solid white;
+      box-shadow: 0 2px 8px 0 rgba(56,189,248,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: transform 0.18s cubic-bezier(.4,0,.2,1), box-shadow 0.18s;
+    ">
+      <span style="color: white;">🚌</span>
+    </div>
+  `;
+}
+
 export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
+  const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
   const map = useMap();
   const [stops, setStops] = useState<BKKStop[]>([]);
   const [markers, setMarkers] = useState<L.Marker[]>([]);
@@ -134,31 +155,16 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
         vehicleType = "BUS";
       }
 
-      // Ikon létrehozása
-      const iconHtml = `
-        <div class="bkk-stop-icon" style="
-          background-color: ${color};
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 12px;
-          transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
-        ">
-          <span style="color: white;">🚌</span>
-        </div>
-      `;
 
+      // Ikon létrehozása (nagyobb, szögletes, csak selected-re pulzál)
+      const selected = stop.id === selectedStopId;
+      const iconHtml = getStopIconHtml({ color, selected });
       const icon = L.divIcon({
         html: iconHtml,
         className: "",
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-        popupAnchor: [0, -10],
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+        popupAnchor: [0, -16],
       });
 
       // Popup tartalom generálása
@@ -206,14 +212,15 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
 
       popupContent += `</div>`;
 
-      // Marker létrehozása
-      const marker = L.marker([stop.lat, stop.lon], { icon }).bindPopup(
-        popupContent
-      );
-
-      return marker;
+  // Marker létrehozása
+  const marker = L.marker([stop.lat, stop.lon], { icon });
+  marker.bindPopup(popupContent);
+  marker.on('click', () => setSelectedStopId(stop.id));
+  marker.on('mouseover', () => setSelectedStopId(stop.id));
+  marker.on('mouseout', () => setSelectedStopId(null));
+  return marker;
     });
-  }, [visible, stops]);
+  }, [visible, stops, selectedStopId]);
 
   // Markerek hozzáadása/eltávolítása a térképről
   useEffect(() => {
