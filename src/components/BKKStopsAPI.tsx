@@ -225,8 +225,13 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
       const marker = L.marker([stop.lat, stop.lon], { icon });
       marker.bindPopup(popupContent);
       marker.on("click", () => setSelectedStopId(stop.id));
-      marker.on("mouseover", () => setSelectedStopId(stop.id));
-      marker.on("mouseout", () => setSelectedStopId(null));
+      marker.on("mouseover", () => {
+        if (!selectedStopId) setSelectedStopId(stop.id);
+      });
+      marker.on("mouseout", () => {
+        // Only clear if not selected by click
+        if (selectedStopId !== stop.id) setSelectedStopId(null);
+      });
       return marker;
     });
   }, [visible, stops, selectedStopId]);
