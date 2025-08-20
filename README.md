@@ -1,5 +1,9 @@
 # 🏠 Rent Map - Interaktív Albérlet Kereső Térkép
 
+🌐 **Élő alkalmazás**: [albiterkep.hu](https://albiterkep.hu) - Próbáld ki most!
+
+👨‍💻 **Készítette**: [Császi Sándor](https://linkedin.com/in/sandorcsaszi) | [![GitHub](https://img.shields.io/badge/GitHub-sandorcsaszi-181717?style=flat-square&logo=github)](https://github.com/sandorcsaszi) [![LinkedIn](https://img.shields.io/badge/LinkedIn-Császi_Sándor-0077B5?style=flat-square&logo=linkedin)](https://linkedin.com/in/sandorcsaszi)
+
 ![Rent Map Hero](screenshots/hero-screenshot.png)
 
 ## � Tartalomjegyzék
