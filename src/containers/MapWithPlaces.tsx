@@ -1,23 +1,39 @@
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  memo,
+  lazy,
+  Suspense,
+} from "react";
 import type { Place, FilterCriteria } from "../types/Place";
 import MapComponent from "../components/MapComponent";
 import Sidebar from "../components/Sidebar";
-import PlaceForm from "../components/PlaceForm";
-import PlaceDetails from "../components/PlaceDetails";
-import LoginModal from "../components/LoginModal";
 import { useAuth } from "../contexts/AuthContext";
 import { usePlaces } from "../services/placesService";
+import { useDebouncedSearch } from "../hooks/useDebounce";
 
-export default function MapWithPlaces() {
+// Lazy load heavy components for better initial load performance
+const PlaceForm = lazy(() => import("../components/PlaceForm"));
+const PlaceDetails = lazy(() => import("../components/PlaceDetails"));
+const LoginModal = lazy(() => import("../components/LoginModal"));
+
+const MapWithPlaces = memo(function MapWithPlaces() {
   const { user, loading: authLoading } = useAuth();
   const { places, createPlace, updatePlace, deletePlace } = usePlaces();
+
+  // Debounced search for better performance
+  const { searchTerm, debouncedSearchTerm, setSearchTerm } = useDebouncedSearch(
+    "",
+    300
+  );
 
   const [addingPosition, setAddingPosition] = useState<[number, number] | null>(
     null
   );
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [editingPlace, setEditingPlace] = useState<Place | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const [showAllPopups, setShowAllPopups] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Alapértelmezetten becsukott
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -68,30 +84,33 @@ export default function MapWithPlaces() {
     floor: place.floor,
   }));
 
-  const handleMapClick = (position: [number, number]) => {
-    if (!user) {
-      return;
-    }
+  const handleMapClick = useCallback(
+    (position: [number, number]) => {
+      if (!user) {
+        return;
+      }
 
-    try {
-      setAddingPosition(position);
-      setSelectedPlace(null);
-      setEditingPlace(null);
-    } catch (error) {
-      console.error("Error in handleMapClick:", error);
-    }
-  };
+      try {
+        setAddingPosition(position);
+        setSelectedPlace(null);
+        setEditingPlace(null);
+      } catch (error) {
+        console.error("Error in handleMapClick:", error);
+      }
+    },
+    [user]
+  );
 
-  const handlePinClick = (place: Place) => {
+  const handlePinClick = useCallback((place: Place) => {
     setSelectedPlace(place);
     setAddingPosition(null);
     setEditingPlace(null);
-  };
+  }, []);
 
-  const handleCloseForm = () => {
+  const handleCloseForm = useCallback(() => {
     setAddingPosition(null);
     setEditingPlace(null);
-  };
+  }, []);
 
   const handleSavePlace = async (placeData: any) => {
     if (!user || !addingPosition) {
@@ -260,35 +279,44 @@ export default function MapWithPlaces() {
     setShowConfirmDialog(true);
   };
 
-  // Szűrt helyek számítása
-  const filteredPlaces = convertedPlaces.filter((place) => {
-    const matchesSearch =
-      place.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      place.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      place.address?.toLowerCase().includes(searchTerm.toLowerCase());
+  // Szűrt helyek számítása - memoizált a teljesítmény javításához
+  const filteredPlaces = useMemo(() => {
+    return convertedPlaces.filter((place) => {
+      const matchesSearch =
+        place.title
+          ?.toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
+        place.description
+          ?.toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()) ||
+        place.address
+          ?.toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase());
 
-    const matchesMinPrice =
-      !filters.minPrice ||
-      (place.rentPrice && place.rentPrice >= filters.minPrice);
-    const matchesMaxPrice =
-      !filters.maxPrice ||
-      (place.rentPrice && place.rentPrice <= filters.maxPrice);
-    const matchesMinFloor =
-      !filters.minFloor || (place.floor && place.floor >= filters.minFloor);
-    const matchesMaxFloor =
-      !filters.maxFloor || (place.floor && place.floor <= filters.maxFloor);
-    const matchesElevator =
-      filters.hasElevator === null || place.hasElevator === filters.hasElevator;
+      const matchesMinPrice =
+        !filters.minPrice ||
+        (place.rentPrice && place.rentPrice >= filters.minPrice);
+      const matchesMaxPrice =
+        !filters.maxPrice ||
+        (place.rentPrice && place.rentPrice <= filters.maxPrice);
+      const matchesMinFloor =
+        !filters.minFloor || (place.floor && place.floor >= filters.minFloor);
+      const matchesMaxFloor =
+        !filters.maxFloor || (place.floor && place.floor <= filters.maxFloor);
+      const matchesElevator =
+        filters.hasElevator === null ||
+        place.hasElevator === filters.hasElevator;
 
-    return (
-      matchesSearch &&
-      matchesMinPrice &&
-      matchesMaxPrice &&
-      matchesMinFloor &&
-      matchesMaxFloor &&
-      matchesElevator
-    );
-  });
+      return (
+        matchesSearch &&
+        matchesMinPrice &&
+        matchesMaxPrice &&
+        matchesMinFloor &&
+        matchesMaxFloor &&
+        matchesElevator
+      );
+    });
+  }, [convertedPlaces, debouncedSearchTerm, filters]);
 
   // Loading állapot - animált betöltés
   if (authLoading) {
@@ -397,42 +425,52 @@ export default function MapWithPlaces() {
       </div>
 
       {/* Ha nincs bejelentkezve, mutassuk a login modalt - KÍVÜL a blur-ös konténertől */}
-      {!user && <LoginModal />}
+      {!user && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <LoginModal />
+        </Suspense>
+      )}
 
       {/* Form modals - csak bejelentkezett felhasználóknak */}
       {user && addingPosition && (
-        <PlaceForm
-          position={addingPosition}
-          onSave={handleSavePlace}
-          onCancel={handleCloseForm}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <PlaceForm
+            position={addingPosition}
+            onSave={handleSavePlace}
+            onCancel={handleCloseForm}
+          />
+        </Suspense>
       )}
 
       {user && editingPlace && (
-        <PlaceForm
-          place={editingPlace}
-          position={[editingPlace.lat, editingPlace.lng]}
-          onSave={handleUpdatePlace}
-          onCancel={handleCloseForm}
-          isEditing={true}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <PlaceForm
+            place={editingPlace}
+            position={[editingPlace.lat, editingPlace.lng]}
+            onSave={handleUpdatePlace}
+            onCancel={handleCloseForm}
+            isEditing={true}
+          />
+        </Suspense>
       )}
 
       {selectedPlace && (
-        <PlaceDetails
-          place={selectedPlace}
-          onClose={handleCloseDetails}
-          onEdit={
-            user?.id === selectedPlace.user_id
-              ? () => handleEditPlace(selectedPlace)
-              : () => {}
-          }
-          onDelete={
-            user?.id === selectedPlace.user_id
-              ? () => handleDeletePlace(selectedPlace.id)
-              : () => {}
-          }
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <PlaceDetails
+            place={selectedPlace}
+            onClose={handleCloseDetails}
+            onEdit={
+              user?.id === selectedPlace.user_id
+                ? () => handleEditPlace(selectedPlace)
+                : () => {}
+            }
+            onDelete={
+              user?.id === selectedPlace.user_id
+                ? () => handleDeletePlace(selectedPlace.id)
+                : () => {}
+            }
+          />
+        </Suspense>
       )}
 
       {/* Modern Confirm Dialog */}
@@ -624,4 +662,9 @@ export default function MapWithPlaces() {
       </footer>
     </div>
   );
-}
+});
+
+// Display name for debugging
+MapWithPlaces.displayName = "MapWithPlaces";
+
+export default MapWithPlaces;

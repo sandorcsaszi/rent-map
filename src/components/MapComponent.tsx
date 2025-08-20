@@ -4,7 +4,7 @@ import L from "leaflet";
 import type { Place } from "../types/Place";
 import PinComponent from "./PinComponent";
 import BKKStopsAPI from "./BKKStopsAPI";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 
 // Fix for default markers in react-leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -74,7 +74,7 @@ function MapResizer() {
   return null;
 }
 
-export default function MapComponent({
+const MapComponent = memo(function MapComponent({
   places,
   onMapClick,
   onPinClick,
@@ -162,4 +162,9 @@ export default function MapComponent({
       </MapContainer>
     </div>
   );
-}
+});
+
+// Display name for debugging
+MapComponent.displayName = "MapComponent";
+
+export default MapComponent;

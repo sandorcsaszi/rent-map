@@ -58,9 +58,9 @@ class BKKApiService {
   private cache = new Map<string, BKKStop[]>();
   private cacheTimestamps = new Map<string, number>();
   private pendingRequests = new Map<string, Promise<BKKStop[]>>();
-  private readonly CACHE_DURATION = 10 * 60 * 1000; // 10 perc cache (növelve)
-  private readonly MIN_DISTANCE_FOR_NEW_REQUEST = 200; // 200m minimum távolság új kéréshez
-  private readonly REQUEST_THROTTLE_MS = 1000; // 1 másodperc minimum két kérés között
+  private readonly CACHE_DURATION = 20 * 60 * 1000; // 20 perc cache (növelve teljesítményért)
+  private readonly MIN_DISTANCE_FOR_NEW_REQUEST = 300; // 300m minimum távolság (optimalizált)
+  private readonly REQUEST_THROTTLE_MS = 800; // 800ms minimum két kérés között (gyorsabb)
   private lastRequestTime = 0;
   
   // Statisztikák
