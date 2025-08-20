@@ -1446,8 +1446,8 @@ export default function Sidebar({
           right: isCollapsed ? "-100%" : "0",
           width: "100%",
           maxWidth: "380px",
-          // Mobilos viewport fix Safari-hoz - fallback + modern
-          height: "100vh",
+          // Safe area kompatibilis magasság
+          height: "calc(100vh - env(safe-area-inset-bottom, 0px))",
           minHeight: "-webkit-fill-available", // Safari mobilos fix
           background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
           borderLeft: `3px solid ${colors.primary}`,
