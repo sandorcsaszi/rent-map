@@ -136,7 +136,7 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
 
       // Ikon létrehozása
       const iconHtml = `
-        <div style="
+        <div class="bkk-stop-icon" style="
           background-color: ${color};
           width: 20px;
           height: 20px;
@@ -147,6 +147,7 @@ export default function BKKStopsAPI({ visible }: BKKStopsAPIProps) {
           align-items: center;
           justify-content: center;
           font-size: 12px;
+          transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
         ">
           <span style="color: white;">🚌</span>
         </div>
