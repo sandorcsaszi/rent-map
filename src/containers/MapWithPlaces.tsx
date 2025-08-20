@@ -563,7 +563,7 @@ export default function MapWithPlaces() {
           gap: "12px",
           fontSize: "14px",
           color: "#6b7280",
-          zIndex: 10000, // Még magasabb mint a LoginModal
+          zIndex: user ? 1400 : 10000, // Sidebar alatt ha be vagyok jelentkezve, felül ha nem
           transition: "all 0.3s ease",
         }}
         className="max-w-xs sm:max-w-sm md:max-w-md" // Responsive szélesség
