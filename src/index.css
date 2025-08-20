@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safari és mobilos viewport javítások */
+@layer base {
+  html, body {
+    height: 100vh;
+    /* Safari mobilos viewport fix */
+    height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+  
+  /* Safari safe area támogatás */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+  
+  /* Safari scrolling optimalizáció */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Logout button fix Safari-ban */
+  .logout-button {
+    position: relative !important;
+    z-index: 999 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
 /* Login modal specific styles */
 @layer base {
   /* Ensure proper background colors */

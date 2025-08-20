@@ -1259,12 +1259,20 @@ export default function Sidebar({
           background: "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
           borderTop: "1px solid rgba(59, 130, 246, 0.2)",
           padding: "12px 16px",
+          // Safe area támogatás mobilra
+          paddingBottom: "max(12px, env(safe-area-inset-bottom))",
           // Safari-kompatibilis backdrop filter
           backdropFilter: "blur(10px)",
           WebkitBackdropFilter: "blur(10px)",
           // Safari fallback ha a backdrop-filter nem működik
           backgroundColor: "rgba(255, 255, 255, 0.95)",
+          // Mobilos viewport fix
+          minHeight: "70px",
+          // Safari-specifikus fix
+          WebkitTransform: "translateZ(0)",
+          transform: "translateZ(0)",
         }}
+        className="pb-safe" // Tailwind safe area class ha van
       >
         <div
           style={{
@@ -1351,7 +1359,13 @@ export default function Sidebar({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              // Safari mobilos fix - biztos láthatóság
+              position: "relative",
+              zIndex: 10,
+              minWidth: "40px",
+              minHeight: "40px",
             }}
+            className="logout-button"
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
               e.currentTarget.style.color = "#ef4444";
@@ -1432,7 +1446,9 @@ export default function Sidebar({
           right: isCollapsed ? "-100%" : "0",
           width: "100%",
           maxWidth: "380px",
+          // Mobilos viewport fix Safari-hoz - fallback + modern
           height: "100vh",
+          minHeight: "-webkit-fill-available", // Safari mobilos fix
           background: `linear-gradient(135deg, ${colors.background} 0%, ${colors.white} 100%)`,
           borderLeft: `3px solid ${colors.primary}`,
           boxShadow: `-4px 0 20px ${colors.primary}15`,
