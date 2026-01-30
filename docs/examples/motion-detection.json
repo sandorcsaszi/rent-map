@@ -1,0 +1,23 @@
+{
+  "name": "Motion Detection Alert",
+  "description": "Security alert with motion detection sensor",
+  "payload": {
+    "gateway_id": "security-gateway-303",
+    "timestamp": "2026-01-30T02:15:30.000Z",
+    "place_id": "motion-alert-place-id",
+    "sensors": [
+      {
+        "sensor_id": "pir-hallway",
+        "sensor_type": "motion",
+        "value": 1,
+        "unit": "boolean",
+        "timestamp": "2026-01-30T02:15:30.000Z"
+      }
+    ],
+    "metadata": {
+      "firmware_version": "1.5.2",
+      "battery_level": 78,
+      "signal_strength": -72
+    }
+  }
+}

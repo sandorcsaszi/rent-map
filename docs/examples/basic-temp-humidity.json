@@ -1,0 +1,25 @@
+{
+  "name": "Basic Temperature and Humidity",
+  "description": "Simple payload with temperature and humidity sensors",
+  "payload": {
+    "gateway_id": "gateway-apt-101",
+    "timestamp": "2026-01-30T14:30:00.000Z",
+    "place_id": "abc123-def456-ghi789",
+    "sensors": [
+      {
+        "sensor_id": "dht22-living",
+        "sensor_type": "temperature",
+        "value": 21.5,
+        "unit": "celsius",
+        "timestamp": "2026-01-30T14:30:00.000Z"
+      },
+      {
+        "sensor_id": "dht22-living",
+        "sensor_type": "humidity",
+        "value": 48.0,
+        "unit": "percent",
+        "timestamp": "2026-01-30T14:30:00.000Z"
+      }
+    ]
+  }
+}

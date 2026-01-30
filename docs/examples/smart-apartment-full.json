@@ -1,0 +1,69 @@
+{
+  "name": "Smart Apartment Full Monitoring",
+  "description": "Comprehensive monitoring with multiple sensor types including location and metadata",
+  "payload": {
+    "gateway_id": "smart-home-hub-202",
+    "timestamp": "2026-01-30T20:00:00.000Z",
+    "place_id": "xyz789-abc123-def456",
+    "sensors": [
+      {
+        "sensor_id": "temp-bedroom",
+        "sensor_type": "temperature",
+        "value": 19.8,
+        "unit": "celsius",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      },
+      {
+        "sensor_id": "hum-bedroom",
+        "sensor_type": "humidity",
+        "value": 52.3,
+        "unit": "percent",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      },
+      {
+        "sensor_id": "air-living",
+        "sensor_type": "air_quality",
+        "value": 420,
+        "unit": "ppm",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      },
+      {
+        "sensor_id": "noise-street",
+        "sensor_type": "noise_level",
+        "value": 55,
+        "unit": "decibels",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      },
+      {
+        "sensor_id": "co2-living",
+        "sensor_type": "co2",
+        "value": 680,
+        "unit": "ppm",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      },
+      {
+        "sensor_id": "light-window",
+        "sensor_type": "light_level",
+        "value": 450,
+        "unit": "lux",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      },
+      {
+        "sensor_id": "door-main",
+        "sensor_type": "door_window",
+        "value": 0,
+        "unit": "boolean",
+        "timestamp": "2026-01-30T20:00:00.000Z"
+      }
+    ],
+    "location": {
+      "lat": 47.4979,
+      "lng": 19.0402
+    },
+    "metadata": {
+      "firmware_version": "2.1.0",
+      "battery_level": 92,
+      "signal_strength": -58
+    }
+  }
+}

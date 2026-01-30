@@ -14,6 +14,7 @@
 - [Környezeti Változók](#-környezeti-változók)
 - [Technikai Részletek](#-technikai-részletek)
 - [API Integráció](#-api-integráció)
+- [IoT Gateway Integráció](#-iot-gateway-integráció)
 - [Közreműködés](#-közreműködés)
 
 ## 💙 A Projekt Története
@@ -215,6 +216,65 @@ src/
 - **Stops**: Megállók lekérdezése koordináták alapján
 - **Cache**: Intelligens cache-elés a teljesítményért
 - **Error handling**: Graceful degradation API hiba esetén
+
+## 📡 IoT Gateway Integráció
+
+Az alkalmazás támogatja IoT gateway-ek és érzékelők integrációját az albérletek környezeti feltételeinek valós idejű monitorozásához.
+
+### 🌡️ Támogatott Szenzorok
+
+- **Hőmérséklet**: Belső hőmérséklet mérés (°C/°F)
+- **Páratartalom**: Relatív páratartalom (%)
+- **Levegő minőség**: CO2 és levegőminőség index (ppm, AQI)
+- **Zajszint**: Környezeti zaj mérés (dB)
+- **Fényerő**: Természetes fény mérés (lux)
+- **Mozgásérzékelő**: Biztonsági célú mozgásérzékelés
+- **Ajtó/Ablak érzékelő**: Nyitás-zárás érzékelés
+- **Füst/CO érzékelő**: Biztonsági riasztások
+
+### 📋 JSON Formátum
+
+Az IoT gateway a következő JSON struktúrát használja szenzoradatok küldésére:
+
+```json
+{
+  "gateway_id": "gateway-001-budapest",
+  "timestamp": "2026-01-30T23:25:00.000Z",
+  "place_id": "uuid-of-rental-place",
+  "sensors": [
+    {
+      "sensor_id": "temp-001",
+      "sensor_type": "temperature",
+      "value": 22.5,
+      "unit": "celsius",
+      "timestamp": "2026-01-30T23:25:00.000Z"
+    }
+  ],
+  "location": {
+    "lat": 47.4979,
+    "lng": 19.0402
+  },
+  "metadata": {
+    "firmware_version": "1.0.0",
+    "battery_level": 85,
+    "signal_strength": -65
+  }
+}
+```
+
+### 📚 Részletes Dokumentáció
+
+- [IoT Gateway Specifikáció](docs/IOT_GATEWAY.md) - Teljes JSON formátum dokumentáció
+- [JSON Schema](docs/iot-sensor-payload.schema.json) - Validációs séma
+- [Példa Payloadok](docs/examples/) - Valós példák különböző szenzor típusokkal
+
+### 🔌 API Végpont
+
+**POST** `/api/iot/sensor-data`
+
+Authentikáció: API kulcs szükséges
+
+További részletek: [IoT Gateway dokumentáció](docs/IOT_GATEWAY.md)
 
 ## 🤝 Közreműködés
 
