@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "IoT Gateway Sensor Payload",
+  "description": "JSON format for sending sensor data from IoT gateway to backend",
+  "type": "object",
+  "required": ["gateway_id", "timestamp", "place_id", "sensors"],
+  "properties": {
+    "gateway_id": {
+      "type": "string",
+      "description": "Unique identifier for the IoT gateway device",
+      "example": "gateway-001-budapest"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the data was collected",
+      "example": "2026-01-30T23:25:00.000Z"
+    },
+    "place_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "UUID reference to the rental place/apartment",
+      "example": "abc123-def456-ghi789"
+    },
+    "sensors": {
+      "type": "array",
+      "description": "Array of sensor readings",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/SensorReading"
+      }
+    },
+    "location": {
+      "$ref": "#/definitions/Location"
+    },
+    "metadata": {
+      "$ref": "#/definitions/Metadata"
+    }
+  },
+  "definitions": {
+    "SensorReading": {
+      "type": "object",
+      "required": ["sensor_id", "sensor_type", "value", "unit", "timestamp"],
+      "properties": {
+        "sensor_id": {
+          "type": "string",
+          "description": "Unique identifier for the sensor",
+          "example": "temp-001"
+        },
+        "sensor_type": {
+          "type": "string",
+          "enum": [
+            "temperature",
+            "humidity",
+            "air_quality",
+            "noise_level",
+            "light_level",
+            "motion",
+            "door_window",
+            "smoke",
+            "co2",
+            "pressure"
+          ],
+          "description": "Type of sensor"
+        },
+        "value": {
+          "type": "number",
+          "description": "Sensor reading value"
+        },
+        "unit": {
+          "type": "string",
+          "enum": [
+            "celsius",
+            "fahrenheit",
+            "percent",
+            "ppm",
+            "aqi",
+            "decibels",
+            "lux",
+            "boolean",
+            "count",
+            "hPa",
+            "mbar"
+          ],
+          "description": "Unit of measurement"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when this reading was taken"
+        }
+      }
+    },
+    "Location": {
+      "type": "object",
+      "required": ["lat", "lng"],
+      "properties": {
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90,
+          "description": "Latitude coordinate"
+        },
+        "lng": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180,
+          "description": "Longitude coordinate"
+        }
+      }
+    },
+    "Metadata": {
+      "type": "object",
+      "properties": {
+        "firmware_version": {
+          "type": "string",
+          "description": "Gateway firmware version",
+          "example": "1.0.0"
+        },
+        "battery_level": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Battery level percentage"
+        },
+        "signal_strength": {
+          "type": "number",
+          "description": "Signal strength in dBm",
+          "example": -65
+        }
+      }
+    }
+  }
+}
